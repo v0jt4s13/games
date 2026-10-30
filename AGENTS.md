@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.3.0** (2026-10-30) - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.4.0** (2026-10-30) - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -16,14 +16,22 @@ sesji, przed pierwszą akcją.**
 
 ## Co to jest
 
-Gry karciane przy stole: Geopolitix, Remik i Poker przeciw komputerowi. Cały kod jest w
-`geopolitics/` (Vite 7, React 19, TypeScript; Node 22.12+). **Bez backendu**, bez kont i bez
-zewnętrznych API; zapis partii w `localStorage` przeglądarki. Poza `geopolitics/` leżą tylko
-`wsgi.py` (serwer produkcyjny), `.gitignore` i ten plik.
+Gry karciane przy stole: Geopolitix, Remik i Poker. Front w `geopolitics/` (Vite 7, React 19,
+TypeScript; Node 22.12+). Dwa tryby:
+
+- **gra lokalna z komputerem** - w całości w przeglądarce, zapis w `localStorage`, bez serwera;
+- **stół online** (człowiek / SI, zaproszenia linkiem, czat tekstowy) - serwer w `server/` (Python,
+  stdlib + SQLite), wołany przez `wsgi.py`; zasady gier wykonuje **ten sam kod silników** w Node
+  (`geopolitics/server/runner.mjs`). Opis i protokół: **`docs/ONLINE.md`**, braki: **`TODO.md`**.
+
+Bez zewnętrznych API i bez kont (tożsamość to ciasteczko). Poza `geopolitics/` leżą `wsgi.py`,
+`server/`, `tests/`, `docs/`, `deploy.sh`.
 
 - Katalog `app_games/` jest kluczem aplikacji w `appctl`/`projects_manager`, a projekt Vite
   siedzi poziom niżej. Komendy `npm` uruchamiaj w `geopolitics/`.
-- Testy: `npm test` w `geopolitics/` (robi build, potem silniki, renderowanie, kompletność kart).
+- Testy: `npm test` w `geopolitics/` (build, silniki, renderowanie, kompletność kart, widoki i pełne gry
+  AI-vs-AI online) oraz `python3 -m unittest discover -s tests` w `app_games/` (API end-to-end i limity, wymaga `node`).
+  Zmiana silnika albo `views.mjs` = oba zestawy.
 
 ## Pułapki
 
@@ -42,12 +50,25 @@ zewnętrznych API; zapis partii w `localStorage` przeglądarki. Poza `geopolitic
   więc paczki `.zip`, PNG i oryginały 1024x1536 zostają poza drzewem (`ops02/dev-files/app_games/`;
   `.gitignore` odrzuca `.zip` i `.png` w `public/cards`). Manifest i tak woli `.webp` przed `.png`.
   Konwersja: Pillow, `resize((512, 768), LANCZOS)`, `save(..., 'WEBP', quality=80, method=6)`.
-- `dist/` i `node_modules/` nie są w gicie. Produkcja buduje front sama (`BUILD_CMD`).
+- **Silniki są wspólne dla trybu lokalnego i serwera.** Zmiana w `geopolitics/src/engines/` zmienia też grę
+  online; zachowuj zgodność wsteczną (np. `action.seat` w wymianie kart Geopolitix jest opcjonalne, a
+  `setActorNames` domyślnie wyłączone, więc lokalnie nadal "Ty"/"Komputer").
+- **Ukryta informacja online tylko przez `geopolitics/server/views.mjs`.** Nowe pole stanu z tajnymi
+  kartami albo stanem losowania musi tam trafić (ukrycie i odbicie miejsc), inaczej wycieknie do
+  przeciwnika. `tests/online.test.mjs` sprawdza szczelność na pełnych grach - dopisz przypadek.
+- **Serwer pod gunicornem ma 3 workery** (`production_manager.sh`), więc stan jest w SQLite, nie w pamięci;
+  zapisy idą przez `store.tx()` (`BEGIN IMMEDIATE`). Nie dodawaj globalnego stanu w procesie.
+- **Node w runtime usługi**: systemd ma tylko PATH systemowy. `BUILD_CMD` zapisuje ścieżkę `node` do
+  `${APP_DIR}/node-path` (`NODE_PATH_FILE`). Brak Node'a widać w `GET /api/health` (`node: null`).
+- `dist/`, `node_modules/` i `data/` nie są w gicie. Produkcja buduje front sama (`BUILD_CMD`).
 
 ## Uruchomienie lokalne
 
-- Przez `tools/appctl.py` (wiersz `ops02/app_games`): Vite na `0.0.0.0:5007`, log w `tools/logs/`.
-- Ręcznie: `cd geopolitics && npm ci && npm run dev -- --port 5173 --strictPort`.
+- Przez `tools/appctl.py` (wiersz `ops02/app_games`): `python3 wsgi.py --port 5007` (zbudowany front + API;
+  najpierw `cd geopolitics && npm ci && npm run build`), log w `tools/logs/`. Zaproszenia działają z innych
+  urządzeń w LAN pod adresem komputera.
+- Dev z HMR: `python3 wsgi.py --port 8012` i `cd geopolitics && npm run dev -- --port 5173 --strictPort`
+  (Vite przekazuje `/api` na 8012).
 
 ## Wdrożenie
 
@@ -58,7 +79,10 @@ zewnętrznych API; zapis partii w `localStorage` przeglądarki. Poza `geopolitic
   z maszyny dev albo bezpośrednio `sudo production_manager.sh update games` na serwerze. `update` buduje
   front (`npm ci && npm run build` w `geopolitics/`) i restartuje usługę. Hosty bastionu i serwera
   w niewersjonowanym `.env.deploy` (wzór: `.env.deploy.example`); po wdrożeniu skrypt sprawdza
-  `/games/` = 200 i `/` = 302 (wspólny vhost z moderacją).
+  `/games/` = 200, `/` = 302 (wspólny vhost z moderacją) i `/games/api/health` z wersją Node. Dane online
+  w `/opt/apps/app_games/data` (poza katalogiem kodu; kopie: `docs/ONLINE.md`).
 - Pierwsze `setup` wymaga rzeczy, których manager nie robi: repozytorium na GitHubie
   (`v0jt4s13/games`, jeszcze nie założone) z kluczem deploy, Node.js 22.12+ i npm na serwerze.
-- Zmiana kodu gry nie wymaga zmian w `wsgi.py`; zmiana układu `dist/` albo prefiksu - tak.
+- `.env` na serwerze ma pierwszeństwo przed repo: po `git pull` sprawdź, że `games.env` ma aktualne
+  `BUILD_CMD` i `EXTRA_SYSTEMD_ENV` (`NODE_PATH_FILE`, `GAMES_DATA_DIR`); `update` przepisuje unit systemd.
+- Zmiana układu `dist/` albo prefiksu wymaga zmian w `wsgi.py`.

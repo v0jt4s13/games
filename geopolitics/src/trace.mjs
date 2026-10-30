@@ -47,7 +47,12 @@ function makeEntry(before,after,action,kind='move') {
  return {seq:0,kind,actor,label:names[action.type]||action.type,context:after.game==='geo'?`Runda ${contextState.round}`:after.game==='rummy'?`Tura ${contextState.turns+1}`:`Rozdanie ${contextState.hand} · ${contextState.street}`,details,changes:changed(b,a),before:b,after:a,private:{before:before?privateSnapshot(before):null,after:privateSnapshot(after)}};
 }
 export function startTrace(s) {return {...s,trace:[{...makeEntry(null,s,{type:'start'}),seq:1}]};}
+// Online play: the server owns the game. While a sink is set, a move is handed to it (sent over HTTP)
+// and the state stays as it is until the next poll brings the server's version.
+let moveSink=null;
+export function setMoveSink(fn) {moveSink=fn;}
 export function trackMove(state,action,reducer) {
+ if(moveSink){moveSink(action);return state;}
  // Keep diagnostics out of engine clones and bot lookahead; entries are immutable.
  const {trace,...engineState}=state;
  const next=reducer(engineState,action);

@@ -1,4 +1,7 @@
 import React from 'react';
+// Online tables: names of the other player and a plain game log (the detailed test log is local-only).
+export const OnlineContext=React.createContext({online:false,opponent:'Komputer'});
+export const useOnline=()=>React.useContext(OnlineContext);
 import {CardBackImage} from './CardBackSettings';
 import TraceLog from './TraceLog';
 import {cardLabel,rankLabel,suitSymbol} from './engines/common.mjs';
@@ -12,6 +15,10 @@ export function PlayingCard({card,hidden=false,selected=false,onClick,small=fals
  return onClick?<button className={cls} aria-label={cardLabel(card)} aria-pressed={selected} onClick={onClick} disabled={disabled}>{content}</button>:<div className={cls} aria-label={hidden?'Zakryta karta':cardLabel(card)} role="img">{content}</div>;
 }
 export function CardBacks({count,game='rummy'}:any) {return <div className="opponent-hand" aria-label={`${count} kart przeciwnika`}>{Array.from({length:Math.min(count,7)},(_,i)=><PlayingCard key={i} hidden small backGame={game}/>)}<span className="hand-count">{count} kart</span></div>;}
-export function GameLog({state}:any) {return <TraceLog state={state}/>;}
-export function Outcome({winner,children}:any) {return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?'Wygrywasz!':winner===1?'Tym razem komputer.':'Remis.'}</h2>{children}</div></section>;}
-export function TurnBadge({bot,text}:any) {return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?'Komputer myśli…':'Twój ruch')}</span>;}
+export function GameLog({state}:any) {
+ const {online}=useOnline();
+ if(online)return <details className="game-log" open><summary>Przebieg gry <span>{state.log.length} ostatnich komunikatów</span></summary><ol className="online-log">{[...state.log].reverse().map((line:string,i:number)=><li key={i}>{line}</li>)}</ol></details>;
+ return <TraceLog state={state}/>;
+}
+export function Outcome({winner,children}:any) {const {online,opponent}=useOnline();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?'Wygrywasz!':winner===1?(online?`Wygrywa ${opponent}.`:'Tym razem komputer.'):'Remis.'}</h2>{children}</div></section>;}
+export function TurnBadge({bot,text}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?(online?`${opponent} myśli…`:'Komputer myśli…'):'Twój ruch')}</span>;}

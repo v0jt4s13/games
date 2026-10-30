@@ -71,6 +71,10 @@ if [ "$ACTION" = "setup" ] || [ "$ACTION" = "update" ] || [ "$ACTION" = "restart
     games="$(code "${PUBLIC_URL}${URL_PREFIX}/")"
     root="$(code "${PUBLIC_URL}/")"
     echo "Kontrola: ${PUBLIC_URL}${URL_PREFIX}/ -> ${games} (oczekiwane 200), ${PUBLIC_URL}/ -> ${root} (oczekiwane 302)"
+    # Stoly online wymagaja Node.js w runtime uslugi: health zwraca wersje albo null.
+    health="$(curl -s -m 15 "${PUBLIC_URL}${URL_PREFIX}/api/health" || true)"
+    echo "Kontrola: /api/health -> ${health:-brak odpowiedzi}"
+    case "$health" in *'"ok":true'*'"node":"v'*) ;; *) games="api" ;; esac
     if [ "$games" != "200" ] || [ "$root" != "302" ]; then
         echo "BLAD kontroli po wdrozeniu - sprawdz: ./deploy.sh status, ./deploy.sh logs" >&2
         exit 1

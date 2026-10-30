@@ -1,4 +1,4 @@
-import {seed,shuffle,playingDeck,assert,note,actorName} from './common.mjs';
+import {seed,shuffle,playingDeck,assert,note,actorName,actorLower} from './common.mjs';
 export const handNames=['Wysoka karta','Para','Dwie pary','Trójka','Strit','Kolor','Full','Kareta','Poker'];
 export function compareRanks(a,b) {for(let i=0;i<Math.max(a.length,b.length);i++){const diff=(a[i]||0)-(b[i]||0);if(diff)return Math.sign(diff);}return 0;}
 export function rankFive(cards) {
@@ -76,7 +76,7 @@ function showdown(s) {
  const comparison=compareRanks(hands[0].rank,hands[1].rank);
  s.players.forEach((p,i)=>p.stack+=payout[i]);s.phase='handEnd';s.pending=[];
  s.result={winner:comparison===0?-1:comparison>0?0:1,payout,hands: hands.map(h=>h.name),showdown:true};
- note(s,`Odkrycie: Ty - ${hands[0].name}, komputer - ${hands[1].name}. Wypłata: ${payout[0]} / ${payout[1]}.`);
+ note(s,`Odkrycie: ${actorName(0)} - ${hands[0].name}, ${actorLower(1)} - ${hands[1].name}. Wypłata: ${payout[0]} / ${payout[1]}.`);
 }
 export function pokerApply(state,a) {
  if(a.type==='nextHand')return dealHand(state);

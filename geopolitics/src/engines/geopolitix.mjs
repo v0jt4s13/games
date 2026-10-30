@@ -1,4 +1,4 @@
-import {shuffle, random, seed, note, actorName, assert} from './common.mjs';
+import {shuffle, random, seed, note, actorName, namesSet, assert} from './common.mjs';
 import {deckFor, rows} from '../data/geopolitix.mjs';
 const emptyRows = () => Object.fromEntries(rows.map(r=>[r,[]]));
 const immune = c => c.hero || c.immune || c.protected;
@@ -50,13 +50,14 @@ export function geoActions(s,p=s.turn) {
  return out;
 }
 function bury(s,c) {const cleaned={...c};delete cleaned.protected;delete cleaned.sanction;s.players[c.owner].grave.push(cleaned);}
+const roundWinText = w => namesSet() ? `${actorName(w)} wygrywa rundę.` : (w === 0 ? 'Wygrywasz rundę.' : 'Komputer wygrywa rundę.');
 function finishTurn(s,p) {
  if(s.players.every(x=>x.passed)) {
   const score=geoTotals(s);
   if(score[0]>=score[1])s.wins[0]++;
   if(score[1]>=score[0])s.wins[1]++;
   s.history.push({round:s.round,score});
-  note(s,`Runda ${s.round}: ${score[0]} : ${score[1]}. ${score[0]===score[1]?'Remis; oboje otrzymują punkt.':score[0]>score[1]?'Wygrywasz rundę.':'Komputer wygrywa rundę.'}`);
+  note(s,`Runda ${s.round}: ${score[0]} : ${score[1]}. ${score[0]===score[1]?'Remis; oboje otrzymują punkt.':roundWinText(score[0]>score[1]?0:1)}`);
   s.phase=Math.max(...s.wins)>=2?'over':'roundEnd';
   if(s.phase==='over')s.winner=s.wins[0]===s.wins[1]?-1:s.wins[0]>s.wins[1]?0:1;
   return;
@@ -69,9 +70,14 @@ export function geoApply(state, action) {
  const s=structuredClone(state),p=s.turn,player=s.players[p],enemy=s.players[1-p];
  if(action.type==='mulligan') {
   assert(s.phase==='mulligan','Wymiana jest dostępna tylko przed meczem.');
-  const ids=action.ids||[];assert(new Set(ids).size===ids.length&&ids.length<=3&&ids.every(id=>s.players[0].hand.some(c=>c.id===id)),'Wybierz maksymalnie 3 różne karty.');
-  const h=s.players[0], removed=h.hand.filter(c=>ids.includes(c.id));
+  // Local game: only the human (seat 0) exchanges. Online: every seat sends its own `seat`
+  // and the match starts once both have decided (an AI seat decides with ids: []).
+  const seat=action.seat??0,online=action.seat!==undefined;
+  assert(seat===0||seat===1,'Nieznane miejsce.');assert(!(s.mulliganDone||[])[seat],'Wymiana kart została już zatwierdzona.');
+  const ids=action.ids||[];assert(new Set(ids).size===ids.length&&ids.length<=3&&ids.every(id=>s.players[seat].hand.some(c=>c.id===id)),'Wybierz maksymalnie 3 różne karty.');
+  const h=s.players[seat], removed=h.hand.filter(c=>ids.includes(c.id));
   h.hand=h.hand.filter(c=>!ids.includes(c.id));h.hand.push(...h.deck.splice(0,ids.length));h.deck=shuffle([...h.deck,...removed],s);
+  if(online){s.mulliganDone=[...(s.mulliganDone||[false,false])];s.mulliganDone[seat]=true;if(!s.mulliganDone.every(Boolean)){note(s,`${actorName(seat)}: wymiana kart zatwierdzona.`);return s;}}
   s.phase='play';s.turn=random(s)<0.5?0:1;note(s,`Początek meczu. Zaczyna: ${actorName(s.turn)}.`);return s;
  }
  if(action.type==='nextRound') {

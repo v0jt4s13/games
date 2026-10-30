@@ -2,6 +2,12 @@
 
 Działający panel i trzy lokalne gry przeciw komputerowi. Frontend React + TypeScript + Vite. Gry działają bez backendu i zewnętrznych API. Interfejs po polsku, frakcje i identyfikatory kart zachowują angielską bazę.
 
+## Stół online (człowiek / SI, czat)
+
+Oprócz gry lokalnej jest tryb online: wybór graczy na miejscach, zaproszenia linkiem i rozmowa tekstowa
+(przycisk „Stół online” na ekranie głównym). Wymaga serwera `app_games/wsgi.py` - opis, protokół i uruchomienie
+w `../docs/ONLINE.md`, braki w `../TODO.md`. Poniższe sekcje dotyczą gry lokalnej.
+
 ## Otwórz i graj
 
 Po zbudowaniu otwórz **dist/standalone.html** w aktualnym Chrome, Firefox, Edge lub Safari. Ten plik ma wbudowany JavaScript i CSS i nie wymaga serwera. Obok muszą pozostać geopolitix-cover.webp i rules-geopolitix.pdf. Można przenieść cały katalog dist.

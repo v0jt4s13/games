@@ -6,6 +6,15 @@ venv/
 geopolitics/node_modules/
 geopolitics/dist/
 *.log
+/data/
 .env.deploy
-geopolitics/public/cards/**/*.zip
+# Archiwa nie idą na GitHuba (paczki grafik i kopie trzymamy poza repo: ops02/dev-files/app_games/)
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.tar.xz
+*.7z
+*.rar
 geopolitics/public/cards/**/*.png

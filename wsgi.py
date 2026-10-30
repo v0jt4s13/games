@@ -1,16 +1,23 @@
 """WSGI server for the card games (production: gunicorn behind nginx).
 
-Serves the static Vite build from geopolitics/dist and nothing else: the games run
-entirely in the browser, there is no API. Build first: see BUILD_CMD in
-projects_manager/production_projects/games.env or `npm ci && npm run build` in geopolitics/.
+Two jobs:
+  * /api/*  - online tables (seats: human / AI, invitations, chat); see server/ and docs/ONLINE.md.
+              The game rules run in Node.js (geopolitics/server/runner.mjs), called by server/engine.py.
+  * the rest - the static Vite build from geopolitics/dist.
+Local single-player needs neither: it runs in the browser.
 
-Run locally: ./venv/bin/gunicorn --bind 127.0.0.1:8012 wsgi:app
+Build first: `npm ci && npm run build` in geopolitics/ (BUILD_CMD in games.env does it on the server).
+Run locally: ./venv/bin/gunicorn --bind 127.0.0.1:8012 wsgi:app   or   python3 wsgi.py --port 8012
 """
 import mimetypes
 import os
+import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
+if str(BASE) not in sys.path:
+    sys.path.insert(0, str(BASE))
+from server import api  # noqa: E402 - needs BASE on sys.path
 DIST = Path(os.environ.get("GAMES_DIST") or BASE / "geopolitics" / "dist").resolve()
 
 # === URL PREFIX ===
@@ -47,6 +54,11 @@ def app(environ, start_response):
         path = path[len(PREFIX):] or "/"
     method = environ.get("REQUEST_METHOD")
 
+    if path == "/api" or path.startswith("/api/"):
+        status, headers, body = api.handle(environ, path)
+        start_response(status, headers)
+        return [b"" if method == "HEAD" else body]
+
     if method not in ("GET", "HEAD"):
         return _send(start_response, _STATUS[405], extra=[("Allow", "GET, HEAD")])
 
@@ -74,3 +86,19 @@ def app(environ, start_response):
     start_response("200 OK", [("Content-Type", ctype), ("Content-Length", str(len(body))),
                               ("Cache-Control", cache)])
     return [b"" if method == "HEAD" else body]
+
+
+if __name__ == "__main__":      # local multi-device testing: python3 wsgi.py --port 8012
+    import argparse
+    from wsgiref.simple_server import WSGIServer, make_server
+    from socketserver import ThreadingMixIn
+
+    class Threaded(ThreadingMixIn, WSGIServer):
+        daemon_threads = True
+
+    cli = argparse.ArgumentParser()
+    cli.add_argument("--port", type=int, default=8012)
+    cli.add_argument("--host", default="0.0.0.0")
+    args = cli.parse_args()
+    print(f"games: http://{args.host}:{args.port}/  (dist: {DIST})")
+    make_server(args.host, args.port, app, server_class=Threaded).serve_forever()

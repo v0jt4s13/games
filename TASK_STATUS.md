@@ -4,68 +4,53 @@ Stan na 2026-10-30. Plik nadpisywany przy kolejnym przekazaniu (nie jest histori
 
 ## Cel
 
-Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker, Vite + React) uruchamiane lokalnie
-przez `tools/appctl.py` i wdrożone na ops02 jako `https://ops02.jdblayer.com/games/`
-(`projects_manager`, gunicorn `127.0.0.1:8012`, wspólny vhost z moderacją).
+Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker) pod `https://ops02.jdblayer.com/games/`
+(`projects_manager`, gunicorn `127.0.0.1:8012`). Dodane **stoły online**: gra z człowiekiem i z SI,
+wybór graczy na miejscach, zaproszenia linkiem, czat tekstowy (wzorowane na kronikach Aetherii).
+Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.md`.
 
 ## Zrobione i zweryfikowane
 
-- `tools/appctl.py`: wiersz `ops02/app_games`, start Vite na `0.0.0.0:5007`, wpis `games` w
-  `MAPA_KATALOGOW`. Test: `python3 -m unittest appctl_tests` (45 OK), komenda startu rozwiązuje
-  się, Vite na 5007 odpowiada 200 po IP z LAN. Commit `tools`: `b238660`.
-- Brak obrazów na kartach: manifest grafik liczył się względem cwd (start z `app_games/`
-  dawał `__GEOPOLITIX_ART__={}`). Poprawione w `geopolitics/vite.config.ts` (root z
-  `configResolved`). Test: manifest po restarcie ma 43 klucze, pliki 200.
-- Grafiki kart: 46 plików WebP 512x768 (81,3 MB -> 4,0 MB), PNG-duplikaty usunięte, trzy `.zip`
-  (61 MB) przeniesione do `ops02/dev-files/app_games/cards-zrodla/` (sumy SHA-256 zgodne).
-  Test: `npm test` 35/35, klucze manifestu przed i po identyczne. Oryginały w tarze w scratchpadzie
-  sesji (87 MB, tymczasowy, może zniknąć).
-- `wsgi.py` (serwuje tylko `geopolitics/dist`, przekierowanie `/games` -> `/games/`, blokada
-  wyjścia poza `dist/`): testowany przez `wsgiref`, nie przez gunicorna.
-- `projects_manager/production_projects/games.env` (commit `12101fb`): wczytuje się w bashu,
-  port 8012 i nazwa `games` bez kolizji z innymi `.env`.
-- `deploy.sh` (bastion + `ssh -t ... sudo production_manager.sh`, kontrola `/games/`=200 i
-  `/`=302): `bash -n` oraz atrapa `ssh`/`curl`. Na prawdziwym serwerze nieuruchamiany.
-- `package.json`/lockfile: `@types/react` i `@types/react-dom` z rejestru zamiast URL-i
-  (commit `8c35234`), bo npm na serwerze odrzucił zależności remote (`EALLOWREMOTE`).
-  Test: `npm ci` w czystym katalogu OK, brak specyfikacji URL/git/file w lockfile.
-- Repo `v0jt4s13/games` założone, `main` zgodny z `origin/main` (commity `d6db764`, `8c35234`, `fca5aa9`).
+- **Wdrożenie podstawowe** (poprzednie tury): front działa na serwerze (potwierdził Właściciel),
+  `deploy.sh`, `games.env`, grafiki WebP, poprawka `npm ci`.
+- **Silniki** (`geopolitics/src/engines/`): nazwy graczy w dzienniku (`setActorNames`), wymiana kart
+  Geopolitix dla dwóch miejsc (`action.seat`, zgodnie wstecznie). Test: `npm test` 41/41.
+- **Runner i widoki** (`geopolitics/server/`): serwer autorytatywny, widoki bez stanu losowania, niedobranych
+  kart i kart przeciwnika, odbicie miejsc. Test: `tests/online.test.mjs` - pełne gry AI-vs-AI we wszystkich
+  trzech grach (obie frakcje Geopolitix), szczelność widoków w każdym kroku, odrzucanie ruchów poza turą.
+- **Serwer** (`server/`, `wsgi.py`): tożsamość (ciasteczko), stoły, miejsca (człowiek/SI/puste), zaproszenia
+  jednorazowe 24 h, ruchy z SI, odzyskiwanie miejsca, czat (limit, wyciszanie, zamknięcie, czyszczenie).
+  Test: `python3 -m unittest discover -s tests` - 19 testów end-to-end przez WSGI (z prawdziwym Node i SQLite).
+  Po HTTP (wsgiref): health, ciasteczko pod prefiksem `/games/`, ochrona CSRF, tworzenie stołu, statyki.
+- **Interfejs** (`geopolitics/src/online/`, `main.tsx`): hub, dołączanie, poczekalnia z wyborem miejsc,
+  rozgrywka na istniejących komponentach gier, czat. Test: `tsc` i build przechodzą.
+- **`tools/appctl.py`**: `ops02/app_games` startuje `python3 wsgi.py --port 5007` (front + API); 45 testów OK.
+- **Konfiguracja**: `games.env` (`BUILD_CMD` zapisuje ścieżkę node, `NODE_PATH_FILE`, `GAMES_DATA_DIR`),
+  `deploy.sh` kontroluje `/api/health`.
 
 ## Zrobione, niesprawdzone
 
-- Poprawka `EALLOWREMOTE` na serwerze: nie udało się odtworzyć ograniczenia lokalnie
-  (lokalny npm 11.8.0, flaga `--allow-remote=none` nie wywołała błędu na starej wersji).
-- Cały `production_manager.sh setup games` po poprawce, gunicorn z `wsgi.py`, vhost `prefix`
-  w `moderacja.conf` i kontrola `/games/` + `/`: nie wykonane (po błędzie `npm ci` venv i
-  gunicorn były już zainstalowane).
+- **Interfejs online nie był oglądany w przeglądarce** (tylko typy, build, API). To pierwszy punkt `TODO.md`.
+- Całość na serwerze po tej zmianie: `update`, Node w runtime usługi, nginx, ciasteczko, `/api/health`.
+- Gunicorn z 3 workerami (lokalnie `wsgiref` i testy przez WSGI).
 
-## Do zrobienia
+## Kolejne kroki
 
-1. Na serwerze po `git pull`/nowym checkoucie: `sudo ./production_manager.sh setup games`
-   (lub `./deploy.sh setup` po założeniu `.env.deploy` z `.env.deploy.example`), potem
-   `curl -sI https://ops02.jdblayer.com/games/` (200) i `.../` (302).
-2. Jeśli `npm ci` znowu padnie: log z serwera; sprawdzić wersję Node (wymagane 22.12+) i npm.
-3. Grafiki dla `america`: `geopolitics/public/cards/america/`, WebP 512x768, nazwy = klucze kart
-   (konwencja w `AGENTS.md`).
+1. Wypchnąć kod (repo `v0jt4s13/games`) i na serwerze `git pull` w `projects_manager` (zmieniony `games.env`),
+   sprawdzić `.env` serwera (ma pierwszeństwo), potem `./deploy.sh update` (kontrola `/api/health`).
+2. Przetestować w dwóch przeglądarkach (P1 w `TODO.md`), poprawić znalezione błędy interfejsu.
+3. Reszta `TODO.md` (kopie bazy, głos, konta, SSE, limity).
 
 ## Otwarte decyzje Właściciela
 
-- Historia gita ma 146 MB (zipy i PNG w pierwszym commicie, już wypchniętym). Zmniejszenie
-  wymaga `git filter-repo` i `push --force` - nie wykonywane bez zgody; aktualnie `git clone`
-  (także na serwerze przy `setup`) ściąga całość raz.
-- `npm audit`: 8 podatności (5 wysokich) wyłącznie w narzędziach deweloperskich
-  (nanoid, picomatch i inne, `overrides`); `--omit=dev` daje 0. Nie aktualizowane.
-- `.env.deploy`: hosty bastionu i serwera nie są w repo; w `~/.ssh/config` nie ma aliasu ops02
-  (nie czytałem `app_mediagenerator/.env.deploy`).
+- Historia gita ma 146 MB (zipy i PNG w pierwszym commicie): przepisanie tylko za zgodą.
+- Czy dodawać głos (TURN, HTTPS) i konta (Google) - odrębne etapy.
 
 ## Dla współpracujących agentów (nie wynika z samego kodu)
 
-- Klucz aplikacji w `appctl`/`projects_manager` to `ops02/app_games`, ale projekt jest w
-  `geopolitics/`; `appctl` startuje z `app_games/`, więc komendy używają ścieżek względnych
-  i nie wolno zakładać cwd w `geopolitics/`.
-- `tools/` ma commit `b238660`, który obejmuje też wpisy `reelgen`, `testy-na-prawko` i
-  `kroniki-aetherii` (były niezacommitowane razem z moimi). W `tools` zostają cudze, nieśledzone:
-  `disk-audit.sh`, `depricated/reelgen-zlecenia.tar.gz`.
-- Główny `/home/vs/repo/AGENTS.md` (v1.23.0, sekcja 1.14 dla `app_games`) nie jest pod gitem,
-  więc ta zmiana nie ma commita.
-- `ops02/dev-files/` jest poza gitem: paczki grafik tam nie mają historii ani kopii.
+- Silniki są wspólne dla gry lokalnej i serwera; ukryta informacja online przechodzi wyłącznie przez
+  `geopolitics/server/views.mjs`. Szczegóły i pułapki: `AGENTS.md`.
+- `tools/` ma niezacommitowane zmiany `appctl.py`, `appctl_tests.py`, `README.md` (wpis `app_games`);
+  cudze nieśledzone `disk-audit.sh`, `depricated/reelgen-zlecenia.tar.gz` zostają.
+- Główny `/home/vs/repo/AGENTS.md` nie jest pod gitem (sekcja 1.14 opisuje `app_games`).
+- Kopie `ops02/dev-files/app_games/cards-zrodla/` (paczki grafik) są poza gitem.
