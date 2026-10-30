@@ -1,0 +1,9 @@
+__pycache__/
+venv/
+.venv/
+.env
+.claude/
+geopolitics/node_modules/
+geopolitics/dist/
+*.log
+.env.deploy

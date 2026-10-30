@@ -1,0 +1,89 @@
+faction;key;name;copies;artwork_file
+Europe;orban;Viktor Orbán;1;europe/orban.webp
+Europe;ursula;Ursula von der Leyen;1;europe/ursula.webp
+Europe;thatcher;Margaret Thatcher;1;europe/thatcher.webp
+Europe;churchill;Winston Churchill;1;europe/churchill.webp
+Europe;meloni;Giorgia Meloni;1;europe/meloni.webp
+Europe;tusk;Donald Tusk;1;europe/tusk.webp
+Europe;macron;Emmanuel Macron;1;europe/macron.webp
+Europe;scholz;Olaf Scholz;1;europe/scholz.webp
+Europe;sanchez;Pedro Sánchez;1;europe/sanchez.webp
+Europe;rutte;Mark Rutte;1;europe/rutte.webp
+Europe;blake;John Blake;4;europe/blake.webp
+Europe;jaroslaw;Jarosław Kaczyński;1;europe/jaroslaw.webp
+Europe;lech;Lech Kaczyński;1;europe/lech.webp
+Europe;morawiecki;Mateusz Morawiecki;1;europe/morawiecki.webp
+Europe;duda;Andrzej Duda;1;europe/duda.webp
+Europe;szydlo;Beata Szydło;1;europe/szydlo.webp
+Europe;czarnek;Przemysław Czarnek;1;europe/czarnek.webp
+Europe;swiss;Gwardia Szwajcarska;4;europe/swiss.webp
+Europe;royal;Gwardia Królewska;1;europe/royal.webp
+Europe;interpol;Agent Interpolu;1;europe/interpol.webp
+Europe;diplomat;Dyplomata z Brukseli;1;europe/diplomat.webp
+Europe;cars;Koncern samochodowy;1;europe/cars.webp
+Europe;athlete;Francuski lekkoatleta;1;europe/athlete.webp
+Europe;chef;Włoski szef kuchni;1;europe/chef.webp
+Europe;battery;Instalator baterii;1;europe/battery.webp
+Europe;miner;Górnik ze Śląska;1;europe/miner.webp
+Europe;navigator;Hiszpański nawigator;1;europe/navigator.webp
+Europe;banker;Szwajcarski bankier;1;europe/banker.webp
+Europe;garden;Ogród filozoficzny;1;europe/garden.webp
+Europe;analyst;Brytyjski analityk;1;europe/analyst.webp
+Europe;blackout;Awaria elektrowni;1;europe/blackout.webp
+Europe;strike;Strajk generalny;1;europe/strike.webp
+Europe;sanctions;Sankcje gospodarcze;1;europe/sanctions.webp
+Europe;energy;Kryzys energetyczny;1;europe/energy.webp
+Europe;scandal;Afera medialna;1;europe/scandal.webp
+Europe;cyber;Cyberatak na sieć;1;europe/cyber.webp
+Europe;flood;Powódź stulecia;1;europe/flood.webp
+Europe;press;Cenzura prasy;1;europe/press.webp
+Europe;gnome;Krasnal;1;europe/gnome.webp
+Europe;devil;Czarny Diabeł;1;europe/devil.webp
+Europe;elf;Zielony Elf;1;europe/elf.webp
+Europe;mermaid;Syrenka Warszawska;1;europe/mermaid.webp
+Europe;pact;Pakt dyplomatyczny;1;europe/pact.webp
+Europe;bribe;Łapówka;1;europe/bribe.webp
+North America;washington;George Washington;1;america/washington.webp
+North America;obama;Barack Obama;1;america/obama.webp
+North America;trump;Donald Trump;1;america/trump.webp
+North America;lincoln;Abraham Lincoln;1;america/lincoln.webp
+North America;biden;Joe Biden;1;america/biden.webp
+North America;clinton;Bill Clinton;1;america/clinton.webp
+North America;ford;Gerald Ford;1;america/ford.webp
+North America;trudeau;Justin Trudeau;1;america/trudeau.webp
+North America;reagan;Ronald Reagan;1;america/reagan.webp
+North America;bush;George W. Bush;1;america/bush.webp
+North America;cowboy;Teksaski kowboj;4;america/cowboy.webp
+North America;rcmp;Gwardia Kanadyjska;4;america/rcmp.webp
+North America;ceo;Tech CEO;1;america/ceo.webp
+North America;ai;Inżynier AI;1;america/ai.webp
+North America;venture;Inwestor Venture;1;america/venture.webp
+North America;crypto;Kryptowalutowy magnat;1;america/crypto.webp
+North America;scientist;Data Scientist;1;america/scientist.webp
+North America;startup;Startupek;1;america/startup.webp
+North America;secret;Agent Secret Service;1;america/secret.webp
+North America;pilot;Pilot F-35;1;america/pilot.webp
+North America;farmer;Farmer z Midwestu;1;america/farmer.webp
+North America;wallstreet;Lobbing z Wall Street;1;america/wallstreet.webp
+North America;hollywood;Hollywoodzki gwiazdor;1;america/hollywood.webp
+North America;nfl;Gracz NFL;1;america/nfl.webp
+North America;sheriff;Szeryf z Arizony;1;america/sheriff.webp
+North America;lumberjack;Drwal z Kanady;1;america/lumberjack.webp
+North America;business;Meksykański przedsiębiorca;1;america/business.webp
+North America;nasa;Inżynier NASA;1;america/nasa.webp
+North America;journalist;Dziennikarz;1;america/journalist.webp
+North America;guide;Przewodnik Yellowstone;1;america/guide.webp
+North America;tornado;Trąba powietrzna;1;america/tornado.webp
+North America;crash;Kryzys na Wall Street;1;america/crash.webp
+North America;katrina;Huragan Katrina;1;america/katrina.webp
+North America;protest;Protesty i strajki;1;america/protest.webp
+North America;drought;Susza w Kalifornii;1;america/drought.webp
+North America;leak;Wyciek danych;1;america/leak.webp
+North America;embargo;Embargo handlowe;1;america/embargo.webp
+North America;capitol;Szturm na Kapitol;1;america/capitol.webp
+North America;leprechaun;Leprechaun;1;america/leprechaun.webp
+North America;broker;Shadow Broker;1;america/broker.webp
+North America;whistleblower;Whistleblower;1;america/whistleblower.webp
+North America;bigfoot;Bigfoot;1;america/bigfoot.webp
+North America;qe;Wydruk dolarów;1;america/qe.webp
+North America;bodyguard;Prywatny ochroniarz;1;america/bodyguard.webp

@@ -1,0 +1,13 @@
+import {build} from 'esbuild';
+import {cardArtScript} from './card-art.mjs';
+import {readFile,writeFile} from 'node:fs/promises';
+const result=await build({entryPoints:['src/main.tsx'],bundle:true,write:false,outfile:'app.js',format:'iife',minify:true,target:'es2022',define:{'process.env.NODE_ENV':'"production"'}});
+const js=result.outputFiles.find(f=>f.path.endsWith('.js')).text;
+const css=result.outputFiles.find(f=>f.path.endsWith('.css')).text;
+let html=await readFile('index.html','utf8');
+html=html.replace('<head>',()=>`<head><script>${cardArtScript()}</script>`);
+const entry='<script type="module" src="/src/main.tsx"></script>';
+if(html.split(entry).length!==2)throw new Error('Nie znaleziono unikalnego punktu wejścia.');
+html=html.replace('</head>',()=>`<style>${css}</style></head>`).replace(entry,()=>`<script>${js.replaceAll('</script','<\\/script')}</script>`);
+await writeFile('dist/standalone.html',html);
+console.log('Gotowe: dist/standalone.html (działa również przez file://, bez serwera).');
