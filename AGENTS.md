@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.2.0** (2026-10-30) - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.3.0** (2026-10-30) - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -34,6 +34,9 @@ zewnętrznych API; zapis partii w `localStorage` przeglądarki. Poza `geopolitic
 - **Build używa ścieżek względnych** (`base: './'`), więc pod prefiksem adres musi kończyć
   się `/` (`/games/`). `wsgi.py` przekierowuje `/games` na `/games/`; nie zmieniaj tego na
   ścieżki bezwzględne bez sprawdzenia `standalone.html`.
+- **Zależności npm tylko z rejestru, jako numer wersji (`"19.2.14"`), nigdy jako URL, git ani `file:`.**
+  npm na serwerze blokuje zależności remote (`EALLOWREMOTE`), więc `npm ci` w `BUILD_CMD` przerywa
+  `setup`/`update` całego wdrożenia. Po zmianie `package.json` sprawdź, że lockfile nie ma takich wpisów.
 - **Grafiki kart: tylko `.webp` 512x768 (jakość ok. 80, ok. 40-140 KB), nazwa = klucz karty,
   w `public/cards/<frakcja>/`.** Wszystko z `public/` trafia do `dist/` i na produkcję bez kompresji,
   więc paczki `.zip`, PNG i oryginały 1024x1536 zostają poza drzewem (`ops02/dev-files/app_games/`;
