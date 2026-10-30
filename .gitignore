@@ -7,3 +7,5 @@ geopolitics/node_modules/
 geopolitics/dist/
 *.log
 .env.deploy
+geopolitics/public/cards/**/*.zip
+geopolitics/public/cards/**/*.png

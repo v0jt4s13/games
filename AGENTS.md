@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.1.0** (2026-10-30) - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.2.0** (2026-10-30) - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -34,8 +34,11 @@ zewnętrznych API; zapis partii w `localStorage` przeglądarki. Poza `geopolitic
 - **Build używa ścieżek względnych** (`base: './'`), więc pod prefiksem adres musi kończyć
   się `/` (`/games/`). `wsgi.py` przekierowuje `/games` na `/games/`; nie zmieniaj tego na
   ścieżki bezwzględne bez sprawdzenia `standalone.html`.
-- `public/` ma ok. 145 MB (grafiki kart, kilka MB każda). Przed dodaniem kolejnych użyj WebP
-  i zmierz rozmiar `dist/`; produkcja wysyła je bez kompresji.
+- **Grafiki kart: tylko `.webp` 512x768 (jakość ok. 80, ok. 40-140 KB), nazwa = klucz karty,
+  w `public/cards/<frakcja>/`.** Wszystko z `public/` trafia do `dist/` i na produkcję bez kompresji,
+  więc paczki `.zip`, PNG i oryginały 1024x1536 zostają poza drzewem (`ops02/dev-files/app_games/`;
+  `.gitignore` odrzuca `.zip` i `.png` w `public/cards`). Manifest i tak woli `.webp` przed `.png`.
+  Konwersja: Pillow, `resize((512, 768), LANCZOS)`, `save(..., 'WEBP', quality=80, method=6)`.
 - `dist/` i `node_modules/` nie są w gicie. Produkcja buduje front sama (`BUILD_CMD`).
 
 ## Uruchomienie lokalne
