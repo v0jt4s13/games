@@ -39,10 +39,12 @@ export function bestMelds(hand, minimum=0) {
  }
  const result=solve(0);return result.points>=minimum?result.groups:[];
 }
-export function newRummy(rng=seed()) {
- const s={game:'rummy',version:1,rng,phase:'draw',turn:0,players:[],melds:[],log:[],turns:0,recycles:0};
+export function newRummy(rng=seed(),count=2) {
+ assert(Number.isInteger(count)&&count>=2&&count<=4,'Remik obsługuje od 2 do 4 graczy.');
+ // The turn limit scales with the table (100 discards per player; 200 for two players, as before).
+ const s={game:'rummy',version:1,rng,phase:'draw',turn:0,players:[],melds:[],log:[],turns:0,recycles:0,maxTurns:100*count};
  const deck=shuffle(playingDeck(2),s);
- s.players=[0,1].map(()=>({hand:deck.splice(0,13),opened:false}));s.discard=deck.splice(0,1);s.stock=deck;note(s,'Dobierz kartę, wyłóż układy i zakończ turę odrzuceniem.');return s;
+ s.players=Array.from({length:count},()=>({hand:deck.splice(0,13),opened:false}));s.discard=deck.splice(0,1);s.stock=deck;note(s,'Dobierz kartę, wyłóż układy i zakończ turę odrzuceniem.');return s;
 }
 function endRummy(s,winner,reason) {
  s.phase='over';s.winner=winner;s.penalties=s.players.map(p=>p.hand.reduce((n,c)=>n+rummyValue(c),0));note(s,reason);
@@ -86,10 +88,10 @@ export function rummyApply(state,a) {
  player.hand=player.hand.filter(c=>c.id!==a.id);s.discard.push(card);s.turns++;
  note(s,`${actorName(p)}: odrzuca ${cardLabel(card)}.`);
  if(!player.hand.length)endRummy(s,p,`${actorName(p)}: wszystkie karty wyłożone. Koniec partii!`);
- else if(s.turns>=200) {
-  const points=s.players.map(x=>x.hand.reduce((n,c)=>n+rummyValue(c),0));
-  endRummy(s,points[0]===points[1]?-1:points[0]<points[1]?0:1,'Limit 200 tur: wygrywa mniejsza liczba punktów na ręce.');
- } else {s.turn=1-p;s.phase='draw';}
+ else if(s.turns>=(s.maxTurns||200)) {
+  const points=s.players.map(x=>x.hand.reduce((n,c)=>n+rummyValue(c),0)),best=Math.min(...points),leaders=points.map((x,i)=>x===best?i:-1).filter(i=>i>=0);
+  endRummy(s,leaders.length===1?leaders[0]:-1,`Limit ${s.maxTurns||200} tur: wygrywa mniejsza liczba punktów na ręce.`);
+ } else {s.turn=(p+1)%s.players.length;s.phase='draw';}
  return s;
 }
 export function rummyBotAction(s) {

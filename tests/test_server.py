@@ -312,6 +312,125 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(after["messages"], [])
         self.assertNotEqual(after["epoch"], epoch)                                      # clients drop their local history
 
+    # --- tables for 3-4 players (rummy, poker) -------------------------------------------------
+    def test_seat_counts_per_game(self):
+        a = Browser().login("Ala")
+        self.assertEqual(a.post("/api/tables", {"game": "poker", "players": 5})[0], 400)
+        self.assertEqual(a.post("/api/tables", {"game": "poker", "players": 1})[0], 400)
+        self.assertEqual(a.post("/api/tables", {"game": "geo", "players": 3})[0], 400)
+        self.assertEqual(a.post("/api/tables", {"game": "rummy", "players": "4"})[0], 400)
+        for game, n in (("poker", 4), ("rummy", 3), ("poker", 2)):
+            tid = new_table(a, game=game, seat_kind=None, players=n)
+            self.assertEqual(len(sync(a, tid)["seats"]), n)
+
+    def test_four_seat_lobby_rules(self):
+        a, b = Browser().login("Ala"), Browser().login("Bartek")
+        tid = new_table(a, game="poker", seat_kind=None, players=4)
+        self.assertEqual(a.post(f"/api/tables/{tid}/seat", {"seat": 3, "kind": "ai"})[0], 200)
+        self.assertEqual(a.post(f"/api/tables/{tid}/seat", {"seat": 4, "kind": "ai"})[0], 400)       # no such seat
+        self.assertEqual(a.post(f"/api/tables/{tid}/seat", {"op": "swap"})[0], 400)                   # swap is for two seats
+        self.assertEqual(a.post(f"/api/tables/{tid}/start")[0], 409)                                  # seats 1 and 2 are empty
+        a.post(f"/api/tables/{tid}/seat", {"seat": 1, "kind": "ai"})
+        code = a.post(f"/api/tables/{tid}/invite", {"seat": 2})[1]["code"]
+        self.assertEqual(b.post("/api/join", {"code": code})[0], 200)
+        self.assertEqual([s["kind"] for s in sync(a, tid)["seats"]], ["human", "ai", "human", "ai"])
+        self.assertEqual(a.post(f"/api/tables/{tid}/start")[0], 200)
+        self.assertEqual(len(sync(b, tid)["view"]["players"]), 4)
+
+    def test_unique_names_for_joining_players(self):
+        a, b, c = Browser().login("Ala"), Browser().login("Ala"), Browser().login("Ala")
+        tid = new_table(a, game="rummy", seat_kind=None, players=3)
+        for seat, browser in ((1, b), (2, c)):
+            browser.post("/api/join", {"code": a.post(f"/api/tables/{tid}/invite", {"seat": seat})[1]["code"]})
+        self.assertEqual([x["name"] for x in sync(a, tid)["seats"]], ["Ala", "Ala (2)", "Ala (3)"])
+
+    def play_round(self, browsers, tid, game, limit=60):
+        """Let whoever is on move act (poker: check/call; rummy: draw then discard). Returns the number of moves."""
+        moves = 0
+        for _ in range(limit):
+            views = [sync(b, tid)["view"] for b in browsers]
+            if views[0]["phase"] == "over":
+                break
+            for browser, view in zip(browsers, views):
+                if view["turn"] != 0:
+                    continue
+                if game == "poker":
+                    if view["phase"] == "handEnd":
+                        action = {"type": "nextHand"}
+                    else:
+                        action = {"type": "call" if view["currentBet"] > view["players"][0]["bet"] else "check"}
+                else:
+                    hand = view["players"][0]["hand"]
+                    action = {"type": "draw", "source": "stock"} if view["phase"] == "draw" else {"type": "discard", "id": hand[0]["id"]}
+                self.assertEqual(browser.post(f"/api/tables/{tid}/action", {"action": action})[0], 200)
+                moves += 1
+                break
+            else:
+                if game == "poker" and views[0]["phase"] == "handEnd":
+                    browsers[0].post(f"/api/tables/{tid}/action", {"action": {"type": "nextHand"}})
+        return moves
+
+    def test_four_seat_poker_two_humans_two_ai(self):
+        a, b = Browser().login("Ala"), Browser().login("Bartek")
+        tid = new_table(a, game="poker", seat_kind=None, players=4)
+        a.post(f"/api/tables/{tid}/seat", {"seat": 2, "kind": "ai"})
+        a.post(f"/api/tables/{tid}/seat", {"seat": 3, "kind": "ai"})
+        b.post("/api/join", {"code": a.post(f"/api/tables/{tid}/invite", {"seat": 1})[1]["code"]})
+        self.assertEqual(a.post(f"/api/tables/{tid}/start")[0], 200)
+        self.assertGreater(self.play_round([a, b], tid, "poker"), 8)
+        for browser, seat in ((a, 0), (b, 1)):
+            view = sync(browser, tid)["view"]
+            self.assertEqual(len(view["players"]), 4)
+            self.assertTrue(all(c.get("hidden") for p in view["players"][1:] for c in p["cards"]) or view.get("result", {}).get("showdown"))
+            self.assertNotIn("rng", view)
+        names = " ".join(sync(a, tid)["view"]["log"])
+        self.assertNotIn("Komputer", names)
+        self.assertIn("SI", names + " SI")
+
+    def test_three_seat_rummy_human_and_two_ai(self):
+        a = Browser().login("Ala")
+        tid = new_table(a, game="rummy", seat_kind=None, players=3)
+        a.post(f"/api/tables/{tid}/seat", {"seat": 1, "kind": "ai"})
+        a.post(f"/api/tables/{tid}/seat", {"seat": 2, "kind": "ai"})
+        self.assertEqual(a.post(f"/api/tables/{tid}/start")[0], 200)
+        self.assertGreater(self.play_round([a], tid, "rummy", limit=80), 5)
+        view = sync(a, tid)["view"]
+        self.assertEqual(len(view["players"]), 3)
+        self.assertTrue(all(c.get("hidden") for p in view["players"][1:] for c in p["hand"]) or view["phase"] == "over")
+        self.assertEqual(view["maxTurns"], 300)
+
+    def test_chat_mute_in_four_seat_table(self):
+        a, b, c = Browser().login("Ala"), Browser().login("Bartek"), Browser().login("Celina")
+        tid = new_table(a, game="poker", seat_kind=None, players=4)
+        for seat, browser in ((1, b), (2, c)):
+            browser.post("/api/join", {"code": a.post(f"/api/tables/{tid}/invite", {"seat": seat})[1]["code"]})
+        a.post(f"/api/tables/{tid}/chat/admin", {"op": "mute", "seat": 2})
+        self.assertEqual(c.post(f"/api/tables/{tid}/chat", {"text": "x"})[0], 403)
+        self.assertEqual(b.post(f"/api/tables/{tid}/chat", {"text": "x"})[0], 200)
+        self.assertEqual(a.post(f"/api/tables/{tid}/chat/admin", {"op": "mute", "seat": 3})[0], 400)      # empty seat
+        self.assertEqual(a.post(f"/api/tables/{tid}/chat/admin", {"op": "mute", "seat": True})[0], 400)
+
+    def test_migrates_database_from_two_player_version(self):
+        import sqlite3
+        old = Path(tempfile.mkdtemp(prefix="games-old-"))
+        saved = config.DATA_DIR
+        try:
+            raw = sqlite3.connect(old / "games.sqlite")
+            raw.executescript("""CREATE TABLE tables (id TEXT PRIMARY KEY, game TEXT NOT NULL, opts TEXT NOT NULL, host TEXT NOT NULL,
+              phase TEXT NOT NULL, seats TEXT NOT NULL, state TEXT, view0 TEXT, view1 TEXT, version INTEGER NOT NULL DEFAULT 1,
+              ai_due REAL, chat_open INTEGER NOT NULL DEFAULT 1, chat_epoch INTEGER NOT NULL DEFAULT 0, created REAL NOT NULL, updated REAL NOT NULL);
+              INSERT INTO tables(id,game,opts,host,phase,seats,state,view0,view1,created,updated)
+              VALUES('old1','poker','{}','h','playing','[]','{}','{"v":0}','{"v":1}',1,1);""")
+            raw.commit(); raw.close()
+            config.DATA_DIR = old
+            conn = store.connect()
+            self.assertEqual(conn.execute("SELECT views FROM tables WHERE id='old1'").fetchone()[0], '[{"v":0},{"v":1}]')
+            store.connect().close()                       # a second connect must not fail (already migrated)
+            conn.close()
+        finally:
+            config.DATA_DIR = saved
+            shutil.rmtree(old, ignore_errors=True)
+
     # --- limits protecting the shared host ------------------------------------------------------
     def test_ip_limits_identity_and_writes(self):
         saved = dict(config.THROTTLE)

@@ -1,6 +1,6 @@
 # Stoły online - architektura i obsługa
 
-Gra z człowiekiem i z SI przy wspólnym stole: wybór graczy na miejscach (jak w kronikach
+Gra z człowiekiem i z SI przy wspólnym stole (Geopolitix: 2 graczy, **Remik i Poker: 2-4 graczy**): wybór graczy na miejscach (jak w kronikach
 Aetherii), zaproszenia jednorazowym linkiem i rozmowa tekstowa. Gra lokalna z komputerem
 (`#geopolitix`, `#remik`, `#poker`) działa jak wcześniej, w przeglądarce, bez serwera.
 
@@ -20,10 +20,11 @@ przegladarka  --HTTP, polling 1 s-->  nginx (/games/)  -->  gunicorn: wsgi.py
   bez stanu generatora losowania, bez niedobranych kart i bez kart przeciwnika (zamiast nich
   znaczniki `hidden`, żeby liczby kart się wyświetlały). Widoki liczy runner przy każdej zmianie
   stanu i serwer zapisuje je w bazie (`view0`, `view1`), więc odpytywanie nie uruchamia Node'a.
-- **Odbicie miejsc.** Silniki są dwuosobowe, a interfejs zakłada "ja = miejsce 0". Widok miejsca 1
-  ma więc zamienione miejsca (`players`, `turn`, `dealer`, `winner`, wyniki...). Dzięki temu komponenty
+- **Obrót miejsc.** Interfejs zakłada "ja = miejsce 0, pozostali w kolejności przy stole". Widok miejsca k
+  ma więc obrócone miejsca: nowy indeks i to stary `(k + i) % n` (`players`, `turn`, `dealer`, `winner`,
+  `pending`, wyniki, właściciele układów...; dla dwóch graczy to dawne "odbicie"). Dzięki temu komponenty
   gier działają bez zmian logiki; tryb online tylko wyłącza lokalnego bota (`useOnline()` w `ui.tsx`)
-  i podmienia napisy "Komputer" na nazwę przeciwnika.
+  i podmienia nazwy graczy (`names` w kolejności widoku, `useSeatName()`).
 - **Ruchy z interfejsu** idą na serwer przez `setMoveSink` (`trace.mjs`): `trackMove` zamiast liczyć
   lokalnie wysyła akcję HTTP, a nowy stan przychodzi z kolejnym odpytaniem (po ruchu klient odpytuje
   od razu).
@@ -34,8 +35,9 @@ przegladarka  --HTTP, polling 1 s-->  nginx (/games/)  -->  gunicorn: wsgi.py
 
 ## Miejsca i zaproszenia
 
-- Gospodarz zajmuje miejsce 1 (można zamienić). Drugie miejsce: **człowiek** (zaproszenie), **SI** albo puste.
-  W Geopolitix miejsce 1 gra wybraną frakcję, drugie przeciwną (zamiana miejsc zamienia frakcje).
+- Gospodarz zajmuje miejsce 1 (przy stole dwuosobowym można zamienić). Każde pozostałe miejsce: **człowiek**
+  (zaproszenie), **SI** albo puste. Liczbę miejsc wybiera gospodarz przy tworzeniu stołu (`players`, 2-4 dla
+  Remika i Pokera). W Geopolitix miejsce 1 gra wybraną frakcję, drugie przeciwną (zamiana miejsc zamienia frakcje).
 - Zaproszenie: link `…/#dolacz/<stol>.<sekret>`; sekret jest w fragmencie adresu (nie trafia do logów nginx),
   w bazie tylko jego skrót SHA-256. **Jednorazowe, ważne 24 godziny**, do 6 aktywnych na stół, gospodarz
   może je odwołać. Dołączenie wymaga kliknięcia na stronie zaproszenia (nie dzieje się przy samym otwarciu linku).
@@ -59,7 +61,7 @@ Zapisy wymagają nagłówka `X-Requested-With: games` (ochrona przed CSRF) i cia
 |---|---|---|
 | `GET /health` | każdy | `{ok, node, games}`; `node: null` = brak Node.js w runtime |
 | `GET /me`, `POST /me` | każdy | tworzy tożsamość (ciasteczko) / zmienia imię |
-| `GET /tables`, `POST /tables` | gracz | moje stoły / nowy stół `{game, faction?}` |
+| `GET /tables`, `POST /tables` | gracz | moje stoły / nowy stół `{game, faction?, players?}` (`players` 2-4 dla remika i pokera) |
 | `POST /join` | gracz | `{code}` - zajęcie zaproszonego miejsca |
 | `GET /tables/<id>?v=&c=&ce=` | siedzący | odpytywanie: pełny stan, gdy zmieniła się wersja; inaczej tylko obecność i nowe wiadomości |
 | `POST /tables/<id>/seat` | gospodarz | `{seat, kind: ai\|empty}` albo `{op: swap}` (tylko przed startem) |
@@ -78,6 +80,9 @@ Zapisy wymagają nagłówka `X-Requested-With: games` (ochrona przed CSRF) i cia
 | `NODE_PATH_FILE` | plik z ścieżką `node`, zapisywany przez `BUILD_CMD`; usługa systemd ma tylko PATH systemowy |
 | `GAMES_AI_DELAY` | opóźnienie ruchu SI w sekundach (domyślnie 0,9) |
 | `SCRIPT_NAME` | prefiks (`/games`), ustawia go `production_manager.sh` |
+
+Widoki graczy są w kolumnie `tables.views` (JSON, jeden na miejsce). Bazy sprzed stołów 3-4-osobowych (kolumny
+`view0`/`view1`) są migrowane przy pierwszym połączeniu (`store._migrate`).
 
 Baza działa w trybie WAL; nie kopiuj pliku `games.sqlite` w trakcie pracy bez `-wal` i `-shm` (użyj
 `sqlite3 games.sqlite ".backup kopia.sqlite"`). Stoły bez aktywności przez 30 dni są sprzątane

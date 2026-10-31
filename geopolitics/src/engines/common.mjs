@@ -14,10 +14,11 @@ export function note(s, message) { s.logSeq = (s.logSeq || 0) + 1; s.log = [...(
 // Local games call the seats "Ty" / "Komputer". Online games (server runner) set real player names
 // before every engine call, so log lines are neutral and read correctly for both players.
 let names = null;
-export function setActorNames(list) { names = Array.isArray(list) && list.length === 2 ? list.map(String) : null; }
+export function setActorNames(list) { names = Array.isArray(list) && list.length >= 2 ? list.map(String) : null; }
 export const namesSet = () => names !== null;
-export const actorName = p => names ? names[p] : (p === 0 ? 'Ty' : 'Komputer');
-export const actorLower = p => names ? names[p] : (p === 0 ? 'Ty' : 'komputer');
+const localName = (p, base) => p === 0 ? 'Ty' : p === 1 ? base : `${base} ${p}`;
+export const actorName = p => names ? names[p] : localName(p, 'Komputer');
+export const actorLower = p => names ? names[p] : localName(p, 'komputer');
 export function playingDeck(copies = 1) {
   return Array.from({length: copies}, (_, copy) => ['S', 'H', 'D', 'C'].flatMap(suit =>
     Array.from({length: 13}, (_, i) => ({id: `${copy}-${suit}-${i+1}`, rank: i+1, suit})))).flat();

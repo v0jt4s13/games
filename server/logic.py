@@ -113,17 +113,25 @@ def _save_seats(conn, table, seats, **extra):
     _touch(conn, table["id"], seats=dumps(seats), **extra)
 
 
-def create_table(conn, player, game, faction):
+def _check_seat(seats, index):
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < len(seats):
+        raise ApiError(400, "Nieprawidłowe miejsce.")
+
+
+def create_table(conn, player, game, faction, players=2):
     if game not in config.GAMES:
         raise ApiError(400, "Nieznana gra.")
+    low, high = config.GAME_SEATS[game]
+    if isinstance(players, bool) or not isinstance(players, int) or not low <= players <= high:
+        raise ApiError(400, f"Ta gra obsługuje od {low} do {high} graczy." if low != high else "Ta gra jest dla dwóch graczy.")
     if conn.execute("SELECT COUNT(*) FROM tables").fetchone()[0] >= config.MAX_TABLES:
         raise ApiError(503, "Serwer ma teraz zbyt wiele stołów. Spróbuj później.")
     mine = conn.execute("SELECT COUNT(*) FROM tables WHERE host=?", (player["id"],)).fetchone()[0]
     if mine >= config.MAX_TABLES_PER_PLAYER:
         raise ApiError(429, "Masz zbyt wiele stołów. Zamknij nieużywane.")
-    opts = {"faction": "america" if faction == "america" else "europe"} if game == "geo" else {}
-    seats = [{"kind": "human", "pid": player["id"], "name": player["name"]},
-             {"kind": "empty", "pid": None, "name": None}]
+    opts = {"faction": "america" if faction == "america" else "europe"} if game == "geo" else {"players": players}
+    seats = [{"kind": "human", "pid": player["id"], "name": player["name"]}] + \
+            [{"kind": "empty", "pid": None, "name": None} for _ in range(players - 1)]
     table_id = secrets.token_urlsafe(6)
     conn.execute("INSERT INTO tables(id,game,opts,host,phase,seats,created,updated) VALUES(?,?,?,?,?,?,?,?)",
                  (table_id, game, dumps(opts), player["id"], "lobby", dumps(seats), now(), now()))
@@ -134,9 +142,10 @@ def set_seat(conn, table, player, index, kind):
     require_host(table, player)
     if table["phase"] != "lobby":
         raise ApiError(409, "Miejsca można zmieniać tylko przed startem.")
-    if index not in (0, 1) or kind not in ("ai", "empty"):
-        raise ApiError(400, "Nieprawidłowe miejsce.")
     seats = seats_of(table)
+    _check_seat(seats, index)
+    if kind not in ("ai", "empty"):
+        raise ApiError(400, "Nieprawidłowy rodzaj miejsca.")
     if seats[index]["kind"] == "human" and seats[index]["pid"] == table["host"]:
         raise ApiError(400, "Nie możesz zająć miejsca gospodarza.")
     seats[index] = ({"kind": "ai", "pid": None, "name": config.AI_NAME} if kind == "ai"
@@ -149,7 +158,10 @@ def swap_seats(conn, table, player):
     require_host(table, player)
     if table["phase"] != "lobby":
         raise ApiError(409, "Miejsca można zamienić tylko przed startem.")
-    seats = seats_of(table)[::-1]
+    seats = seats_of(table)
+    if len(seats) != 2:
+        raise ApiError(400, "Zamiana miejsc dotyczy tylko stołu dwuosobowego.")
+    seats = seats[::-1]
     opts = json.loads(table["opts"])
     if table["game"] == "geo":     # seat 0 plays the chosen faction; keep each player's faction when seats swap
         opts["faction"] = "america" if opts.get("faction") != "america" else "europe"
@@ -178,8 +190,7 @@ def close_table(conn, table, player):
 # --- invitations ------------------------------------------------------------------------------
 def create_invite(conn, table, player, index):
     require_host(table, player)
-    if index not in (0, 1):
-        raise ApiError(400, "Nieprawidłowe miejsce.")
+    _check_seat(seats_of(table), index)
     seat = seats_of(table)[index]
     if seat["kind"] == "ai":
         raise ApiError(409, "To miejsce zajmuje SI - najpierw ustaw je jako puste.")
@@ -227,9 +238,11 @@ def join_with_code(conn, player, code):
     # names are baked into the game log at start: a recovered seat keeps its original name
     baked = seat.get("name") or seat.get("keep")
     name = baked if table["phase"] != "lobby" and baked else player["name"]
-    other = seats[1 - invite["seat"]]["name"]
-    if other and other == name:
-        name = f"{name[:20]} (2)"
+    taken = {s["name"] for j, s in enumerate(seats) if j != invite["seat"] and s["name"]}
+    base, n = name, 1
+    while name in taken:                              # names must be unique: the game log is written with them
+        n += 1
+        name = f"{base[:20]} ({n})"
     seats[invite["seat"]] = {"kind": "human", "pid": player["id"], "name": name}
     conn.execute("UPDATE invites SET used_by=? WHERE id=?", (player["id"], invite["id"]))
     _save_seats(conn, table, seats)
@@ -249,7 +262,7 @@ def _store_state(conn, table, seats, result, **extra):
     state = result["state"]
     over = state.get("phase") == "over"
     ai_due = None if over or not _ai_seats(seats) else now() + config.AI_DELAY
-    _touch(conn, table["id"], state=dumps(state), view0=dumps(result["views"][0]), view1=dumps(result["views"][1]),
+    _touch(conn, table["id"], state=dumps(state), views=dumps(result["views"]),
            phase="over" if over else "playing", ai_due=ai_due, **extra)
 
 
@@ -259,7 +272,8 @@ def start_game(conn, table, player):
     seats = seats_of(table)
     if any(s["kind"] == "empty" for s in seats):
         raise ApiError(409, "Obydwa miejsca muszą być zajęte (gracz albo SI).")
-    result = engine.run({"op": "new", "game": table["game"], "opts": json.loads(table["opts"]), "names": _names(seats)})
+    opts = {**json.loads(table["opts"]), **({} if table["game"] == "geo" else {"players": len(seats)})}
+    result = engine.run({"op": "new", "game": table["game"], "opts": opts, "names": _names(seats)})
     _store_state(conn, table, seats, result)
 
 
@@ -355,7 +369,8 @@ def chat_admin(conn, table, player, op, seat=None):
         _touch(conn, table["id"], chat_open=0 if op == "close" else 1)
     elif op in ("mute", "unmute"):
         seats = seats_of(table)
-        if seat not in (0, 1) or seats[seat]["kind"] != "human" or seats[seat]["pid"] == table["host"]:
+        if isinstance(seat, bool) or not isinstance(seat, int) or not 0 <= seat < len(seats) \
+                or seats[seat]["kind"] != "human" or seats[seat]["pid"] == table["host"]:
             raise ApiError(400, "Nie można zmienić uprawnień tego uczestnika.")
         if op == "mute":
             conn.execute("INSERT OR IGNORE INTO mutes(table_id,player_id) VALUES(?,?)", (table["id"], seats[seat]["pid"]))
@@ -385,7 +400,7 @@ def table_payload(conn, table, player, chat_after_id=0):
         "version": table["version"], "seat": seat, "host": host,
         "seats": [{"kind": s["kind"], "name": s["name"], "online": online[i], "you": i == seat,
                    "host": s["pid"] == table["host"], "muted": i in muted} for i, s in enumerate(seats)],
-        "view": json.loads(table[f"view{seat}"]) if table["phase"] != "lobby" and table[f"view{seat}"] else None,
+        "view": json.loads(table["views"])[seat] if table["phase"] != "lobby" and table["views"] else None,
         "waiting": bool(table["ai_due"]),
         "chat": {"open": bool(table["chat_open"]), "epoch": table["chat_epoch"], "muted": seat in muted,
                  "messages": (chat_after(conn, table, player, chat_after_id) if chat_after_id

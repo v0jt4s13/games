@@ -22,14 +22,14 @@ function NameField({identity}: any) {
 }
 
 export function OnlineHub() {
-  const identity = useIdentity(), [game, setGame] = useState('poker'), [faction, setFaction] = useState('europe');
+  const identity = useIdentity(), [game, setGame] = useState('poker'), [faction, setFaction] = useState('europe'), [players, setPlayers] = useState(2);
   const [tables, setTables] = useState<any[]>([]), [code, setCode] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   useEffect(() => { if (identity.name !== null) api('tables').then(d => setTables(d.tables)).catch(() => {}); }, [identity.name]);
   const create = async () => {
     setBusy(true);
     try {
       await identity.save(identity.name || '');
-      const d = await api('tables', 'POST', {game, faction});
+      const d = await api('tables', 'POST', {game, faction, players: game === 'geo' ? 2 : players});
       location.hash = `stol/${d.id}`;
     } catch (e: any) { setError(e.message); setBusy(false); }
   };
@@ -47,6 +47,11 @@ export function OnlineHub() {
           {Object.entries(gameNames).map(([key, label]) => <label className="faction-choice" key={key}>
             <input type="radio" name="game" checked={game === key} onChange={() => setGame(key)}/><span><strong>{label}</strong></span></label>)}
         </fieldset>
+        {game !== 'geo' && <fieldset><legend>Liczba graczy przy stole</legend>
+          {[2, 3, 4].map(n => <label className="faction-choice" key={n}>
+            <input type="radio" name="players" checked={players === n} onChange={() => setPlayers(n)}/><span><strong>{n} graczy</strong>
+              <small>{n === 2 ? 'Ty i jedna osoba albo SI' : 'Miejsca zajmują ludzie albo SI'}</small></span></label>)}
+        </fieldset>}
         {game === 'geo' && <fieldset><legend>Twoja frakcja</legend>
           {[['europe', 'Europe'], ['america', 'North America']].map(([key, label]) => <label className="faction-choice" key={key}>
             <input type="radio" name="faction" checked={faction === key} onChange={() => setFaction(key)}/><span><strong>{label}</strong></span></label>)}

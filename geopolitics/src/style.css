@@ -119,3 +119,9 @@
 .chat-error,.chat-note{margin:0;font-size:.85rem}.chat-error{color:var(--red)}.chat-note{color:var(--muted)}
 .chat-admin summary{cursor:pointer;font-size:.85rem;color:var(--muted)}
 @media (max-width:600px){.online-promo{padding:16px}.chat-list li{max-width:95%}}
+
+/* === 3-4 graczy (poker, remik) === */
+.poker-opponents,.rummy-opponents{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.poker-seat.seat-folded{opacity:.55}
+.rummy-opponents .player-line{flex:1 1 220px;min-width:0}.rummy-opponents .player-line.turn-active{outline:2px solid var(--gold);outline-offset:4px;border-radius:8px}
+.player-count{border:1px solid var(--line);border-radius:8px;display:grid;gap:8px;padding:12px;margin:12px 0}

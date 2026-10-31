@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS tables (
   id TEXT PRIMARY KEY, game TEXT NOT NULL, opts TEXT NOT NULL, host TEXT NOT NULL,
   phase TEXT NOT NULL,            -- lobby | playing | over
   seats TEXT NOT NULL,            -- JSON: [{kind: human|ai|empty, pid, name}, x2]
-  state TEXT, view0 TEXT, view1 TEXT,
+  state TEXT, views TEXT,        -- views: JSON list, one per seat (what that player may see)
   version INTEGER NOT NULL DEFAULT 1, ai_due REAL,
   chat_open INTEGER NOT NULL DEFAULT 1, chat_epoch INTEGER NOT NULL DEFAULT 0,
   created REAL NOT NULL, updated REAL NOT NULL);
@@ -37,7 +37,21 @@ def connect():
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA)
+    _migrate(conn)
     return conn
+
+
+def _migrate(conn):
+    """Databases created before 3-4 player tables kept two columns view0/view1."""
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(tables)")}
+    if "views" in columns:
+        return
+    try:
+        conn.execute("ALTER TABLE tables ADD COLUMN views TEXT")
+        if "view0" in columns:
+            conn.execute("UPDATE tables SET views='['||view0||','||view1||']' WHERE view0 IS NOT NULL AND view1 IS NOT NULL")
+    except sqlite3.OperationalError:          # another worker migrated at the same moment
+        pass
 
 
 @contextlib.contextmanager

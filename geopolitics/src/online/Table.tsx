@@ -120,7 +120,9 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
   if (!t) return <section className="online-hub"><p className="muted" role="status">Łączenie ze stołem…</p>{error && <div className="notice error" role="alert">{error}</div>}</section>;
 
   const lobby = t.phase === 'lobby', full = t.seats.every((s: any) => s.kind !== 'empty'), name = gameNames[t.game];
-  const opponent = t.seats[1 - t.seat]?.name || 'Przeciwnik';
+  // names in the order the game view uses: me first, then the others in table order
+  const names = t.seats.map((_: any, i: number) => t.seats[(t.seat + i) % t.seats.length].name || 'Wolne miejsce');
+  const opponent = names[1] || 'Przeciwnik';
   const Game = GAMES[t.game];
   const seatGrid = <div className="seat-grid" aria-label="Miejsca przy stole">
     {t.seats.map((_: any, i: number) => <SeatCard key={i} t={t} index={i} fresh={fresh} cmd={cmd} invite={invite} revoke={revoke}/>)}
@@ -136,7 +138,7 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
       {t.host ? <>
         <p className="muted">Ustaw miejsca: zaproś człowieka albo dodaj SI. Zaproszenie to jednorazowy link - wyślij go wybranej osobie.</p>
         <div className="action-row">
-          <button onClick={() => cmd('seat', {op: 'swap'})}>Zamień miejsca</button>
+          {t.seats.length === 2 && <button onClick={() => cmd('seat', {op: 'swap'})}>Zamień miejsca</button>}
           <button className="primary" disabled={!full} onClick={() => cmd('start')}>Rozpocznij grę <Icon name="arrow"/></button>
           <ConfirmButton label="Zamknij stół" confirm="Na pewno zamknąć" onConfirm={close}/>
         </div>
@@ -147,9 +149,9 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
       </>}
     </div>}
 
-    {!lobby && <OnlineContext.Provider value={{online: true, opponent}}>
+    {!lobby && <OnlineContext.Provider value={{online: true, opponent, names}}>
       {!full && <div className="notice" role="status">Czekamy na gracza - miejsce jest wolne.{t.host ? ' Utwórz zaproszenie powyżej.' : ''}</div>}
-      <div className="online-strip"><span><Dot on={t.seats[t.seat].online}/>Ty ({t.seats[t.seat].name})</span><span>przeciwnik: <Dot on={t.seats[1 - t.seat].online}/>{opponent}</span>
+      <div className="online-strip">{t.seats.map((_: any, i: number) => { const s = t.seats[(t.seat + i) % t.seats.length]; return <span key={i}><Dot on={s.online}/>{i === 0 ? `Ty (${s.name})` : s.name || 'wolne miejsce'}</span>; })}
         {t.waiting && t.view?.phase !== 'over' && <span className="muted" role="status">SI myśli…</span>}</div>
       <Game key={`${t.game}-${t.id}`} state={t.view} setState={() => {}} run={(fn: any) => { try { fn(); return true; } catch (e: any) { setError(e.message); return false; } }} paused={false}/>
       <div className="table-controls"><div className="action-row">

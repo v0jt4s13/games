@@ -1,7 +1,12 @@
 import React from 'react';
 // Online tables: names of the other player and a plain game log (the detailed test log is local-only).
-export const OnlineContext=React.createContext({online:false,opponent:'Komputer'});
+export const OnlineContext=React.createContext<any>({online:false,opponent:'Komputer',names:null});
 export const useOnline=()=>React.useContext(OnlineContext);
+// Name of the player at seat `i` (0 = me; the others follow in table order). Local games: Ty, Komputer, Komputer 2...
+export function useSeatName(){const {names}=useOnline();return (i:number,lower=false)=>names?names[i]:i===0?'Ty':lower?(i===1?'komputer':`komputer ${i}`):(i===1?'Komputer':`Komputer ${i}`);}
+export function PlayerCount({value,onChange,max=4}:any) {
+ return <fieldset className="player-count"><legend>Liczba graczy</legend>{Array.from({length:max-1},(_,k)=>k+2).map(n=><label className="faction-choice" key={n}><input type="radio" name="player-count" checked={value===n} onChange={()=>onChange(n)}/><span><strong>{n===2?'2 graczy':`${n} graczy`}</strong><small>{n===2?'Ty i komputer':`Ty i ${n-1} ${n===2?'komputer':'komputery'}`}</small></span></label>)}</fieldset>;
+}
 import {CardBackImage} from './CardBackSettings';
 import TraceLog from './TraceLog';
 import {cardLabel,rankLabel,suitSymbol} from './engines/common.mjs';
@@ -20,5 +25,5 @@ export function GameLog({state}:any) {
  if(online)return <details className="game-log" open><summary>Przebieg gry <span>{state.log.length} ostatnich komunikatów</span></summary><ol className="online-log">{[...state.log].reverse().map((line:string,i:number)=><li key={i}>{line}</li>)}</ol></details>;
  return <TraceLog state={state}/>;
 }
-export function Outcome({winner,children}:any) {const {online,opponent}=useOnline();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?'Wygrywasz!':winner===1?(online?`Wygrywa ${opponent}.`:'Tym razem komputer.'):'Remis.'}</h2>{children}</div></section>;}
-export function TurnBadge({bot,text}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?(online?`${opponent} myśli…`:'Komputer myśli…'):'Twój ruch')}</span>;}
+export function Outcome({winner,children,players=2}:any) {const {online}=useOnline(),name=useSeatName();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?'Wygrywasz!':winner>0?(online||players>2?`Wygrywa ${name(winner)}.`:'Tym razem komputer.'):'Remis.'}</h2>{children}</div></section>;}
+export function TurnBadge({bot,text,who}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?`${who||(online?opponent:'Komputer')} myśli…`:'Twój ruch')}</span>;}

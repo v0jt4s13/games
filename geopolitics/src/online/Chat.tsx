@@ -48,7 +48,7 @@ export default function Chat({tableId, messages, meta, seats, isHost, onChanged}
     catch (e: any) { setError(e.message); }
   }
   const canWrite = meta.open && !meta.muted;
-  const other = seats.findIndex((s: any) => s.kind === 'human' && !s.host);
+  const others = seats.map((s: any, i: number) => ({s, i})).filter(({s}: any) => s.kind === 'human' && !s.host);
 
   return <aside className="chat-panel" aria-label="Komunikacja">
     <button className="chat-toggle" aria-expanded={expanded} onClick={() => setExpanded(v => !v)}>
@@ -74,7 +74,7 @@ export default function Chat({tableId, messages, meta, seats, isHost, onChanged}
       </div>
       {isHost && <details className="chat-admin"><summary>Moderacja rozmowy</summary><div className="action-row">
         <button onClick={() => admin(meta.open ? 'close' : 'open')}>{meta.open ? 'Zamknij rozmowę' : 'Otwórz rozmowę'}</button>
-        {other >= 0 && <button onClick={() => admin(seats[other].muted ? 'unmute' : 'mute', other)}>{seats[other].muted ? `Przywróć: ${seats[other].name}` : `Wycisz: ${seats[other].name}`}</button>}
+        {others.map(({s, i}: any) => <button key={i} onClick={() => admin(s.muted ? 'unmute' : 'mute', i)}>{s.muted ? `Przywróć: ${s.name}` : `Wycisz: ${s.name}`}</button>)}
         {confirmClear ? <><button className="primary" onClick={() => admin('clear')}>Na pewno wyczyścić</button><button onClick={() => setConfirmClear(false)}>Anuluj</button></>
           : <button onClick={() => setConfirmClear(true)}>Wyczyść historię</button>}
       </div></details>}

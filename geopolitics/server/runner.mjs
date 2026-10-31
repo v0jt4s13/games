@@ -3,13 +3,14 @@
 //   {op:'apply', game, state, seat, action, names}    -> {state}            (validated move of a seat)
 //   {op:'auto',  game, state, aiSeats, names}         -> {state, moved, action?}  (one AI step, if due)
 //   {op:'view',  game, state, seat}                   -> {view}
-// 'new', 'apply' and a moving 'auto' also return `views` ([seat 0 view, seat 1 view]).
+// 'new' takes opts {faction} (geo) or {players: 2..4} (rummy, poker).
+// 'new', 'apply' and a moving 'auto' also return `views` (one per seat, in seat order).
 // Errors are returned as {error} with exit code 0, so the server can show them to the player.
 import {setActorNames} from '../src/engines/common.mjs';
 import {newGeo, geoApply, geoBotAction} from '../src/engines/geopolitix.mjs';
 import {newRummy, rummyApply, rummyBotAction} from '../src/engines/rummy.mjs';
 import {newPoker, pokerApply, pokerBotAction} from '../src/engines/poker.mjs';
-import {viewFor} from './views.mjs';
+import {viewFor, viewsFor} from './views.mjs';
 
 const ENGINES = {
   geo: {apply: geoApply, bot: geoBotAction, types: ['mulligan', 'nextRound', 'play', 'pass']},
@@ -51,8 +52,8 @@ function handle(req) {
     case 'new': {
       const opts = req.opts || {};
       if (req.game === 'geo') return {state: newGeo(opts.faction === 'america' ? 'america' : 'europe')};
-      if (req.game === 'rummy') return {state: newRummy()};
-      if (req.game === 'poker') return {state: newPoker()};
+      if (req.game === 'rummy') return {state: newRummy(undefined, opts.players || 2)};
+      if (req.game === 'poker') return {state: newPoker(undefined, opts.players || 2)};
       return fail('Nieznana gra.');
     }
     case 'apply': return {state: playerMove(req.game, req.state, req.seat, req.action)};
@@ -65,7 +66,7 @@ function handle(req) {
 // Every state change ships both players' views, so the server stores them once and
 // polling clients never need the engine.
 function withViews(out) {
-  if (out && out.state && (out.moved === undefined || out.moved)) out.views = [viewFor(out.state, 0), viewFor(out.state, 1)];
+  if (out && out.state && (out.moved === undefined || out.moved)) out.views = viewsFor(out.state);
   return out;
 }
 

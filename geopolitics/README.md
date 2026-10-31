@@ -48,8 +48,8 @@ Weryfikacja: 35 testów, w tym 30 symulowanych meczów Geopolitix, 10 partii Rem
 
 - Panel: trzy gry, zasady, wznowienie oddzielnych zapisów, potwierdzenie restartu tylko wybranej gry.
 - Geopolitix: Europe i North America po 50 kart, 21 na ręce, mulligan do 3, trzy rzędy, serie, premie, katastrofy, specjalne karty, pas, rundy i wynik meczu. Wybór karty pokazuje cele i punkty po ruchu. Asia, Africa i South America pozostają poza MVP.
-- Remik: dwie talie bez jokerów, 13 kart, dobór/odrzucanie, grupy i sekwensy, przygotowanie kilku układów do otwarcia 51, dokładanie, podpowiedzi, tasowanie stosu, wynik. Limit 200 tur zapobiega nieskończonej partii.
-- Poker: heads-up Texas Hold’em, 1000 żetonów, blindy 10/20, rotacja dealera, check/call/fold/raise, all-in, automatyczne odkrycie stołu, ranking 5 z 7, remisy, zwrot nadpłat i wynik meczu. Uniwersalne rozliczenie pul jest testowane również dla więcej niż dwóch kontrybutorów, ale UI oferuje tylko dwóch graczy.
+- Remik: dwie talie bez jokerów, 13 kart, dobór/odrzucanie, grupy i sekwensy, przygotowanie kilku układów do otwarcia 51, dokładanie, podpowiedzi, tasowanie stosu, wynik. Dla 2-4 graczy; limit 100 tur na gracza (200 przy dwóch) zapobiega nieskończonej partii.
+- Poker: Texas Hold’em dla 2-4 graczy (przy dwóch heads-up), 1000 żetonów, blindy 10/20, rotacja dealera, check/call/fold/raise, all-in z pulami bocznymi, odpadanie graczy bez żetonów, automatyczne odkrycie stołu, ranking 5 z 7, remisy, zwrot nadpłat i wynik meczu. Przeciwnicy to komputery (lokalnie) albo ludzie i SI (stół online).
 - Motywy Auto / Jasny / Ciemny: localStorage i skrypt przed pierwszym malowaniem. Obsługa klawiatury i dotyku; bez obowiązkowego przeciągania. Modal zasad zatrzymuje ruchy bota.
 
 ## Zapis i ograniczenia
