@@ -23,6 +23,15 @@ Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 
 ## P2 - niedokończone fragmenty i luki
 
+- [ ] **Poker i Remik dla 3-4 graczy: układ w przeglądarce.** Silniki i widoki są przetestowane (pełne mecze
+  3-4 graczy, szczelność widoków, renderowanie), ale układ stołu na wąskich ekranach (4 miejsca, 6 zakrytych kart
+  przeciwników) nie był oglądany. Do sprawdzenia razem z testem online (P1).
+- [ ] **Bot pokera/remika** gra tak samo przy 2 i 4 graczach (prosta heurystyka, bez oceny liczby przeciwników,
+  bez blefu). Przy 4 graczach jest słabszy/bardziej przewidywalny; osobne zadanie.
+- [ ] **Poker: pule boczne w interfejsie** - wypłaty są pokazane w sumie na gracza, bez rozbicia na pule.
+- [ ] **Gra lokalna 3-4 graczy**: komputery grają po kolei co ok. 0,6-0,85 s; przy czterech graczach rozdanie
+  trwa dłużej. Pauza i "jeden ruch komputera" w trybie testowym działają dla dowolnego komputera.
+
 - [ ] **Głos** (jest w kronikach: WebRTC + TURN, "Mic", wyciszanie). Tu tylko tekst. Wymaga TURN
   (`compose.turn.yaml` z kronik) i HTTPS; osobny etap.
 - [ ] **Konta i zaproszenia przypisane do konta** (w kronikach: logowanie Google). Teraz tożsamość to ciasteczko;
@@ -52,7 +61,7 @@ Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 
 - [ ] Otwarte stoły (lista publiczna, dobieranie), widzowie, powtórki partii.
 - [ ] Więcej niż dwóch graczy (silniki są dwuosobowe: poker wieloosobowy, remik 2-4).
-- [ ] Rankingi i statystyki, grafiki kart dla `america` (patrz `AGENTS.md`).
+- [ ] Rankingi i statystyki.
 - [ ] Zaproszenia e-mailem (w kronikach też poza MVP).
 - [ ] Historia gita ma 146 MB (zipy i PNG z pierwszego commita) - przepisanie historii tylko za zgodą Właściciela.
 - [ ] `npm audit`: 8 podatności w narzędziach deweloperskich (`--omit=dev`: 0), do osobnej aktualizacji.

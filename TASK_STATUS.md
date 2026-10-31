@@ -9,6 +9,24 @@ Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker) pod `https://ops02.jdbla
 wybór graczy na miejscach, zaproszenia linkiem, czat tekstowy (wzorowane na kronikach Aetherii).
 Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.md`.
 
+## Grafiki kart Ameryki (2026-10-31)
+
+- `public/cards/america`: 44 karty, WebP 512x768 (82,8 MB -> 4,1 MB); obie talie mają komplet grafik (44/44).
+  Naprawiona nazwa `europe/orbán.webp` -> `orban.webp` (klucz karty bez akcentu; wcześniej Orbán nie miał grafiki).
+- Poza drzewem, w `ops02/dev-files/app_games/cards-zrodla/` (poza gitem, bez kopii): 44 PNG źródeł Ameryki,
+  archiwum `geopolitix-north-america-44.zip` i `america-webp-1024x1536.tar` (oryginały WebP przed konwersją).
+
+## Remik i Poker dla 2-4 graczy
+
+- Silniki (`poker.mjs`, `rummy.mjs`): n graczy zamiast `1 - p`; poker z blindami i kolejnością dla 3-4 graczy,
+  odpadaniem, pulami bocznymi i wygraną przez spasowanie reszty; dwóch graczy bez zmian (29 istniejących testów OK).
+  `tests/multiplayer.test.mjs`: pozycje, spasowanie do jednego, odpadanie, 3 all-iny, pełne mecze 3-4 graczy z kontrolą
+  żetonów i kart, Remik 3-4 graczy, limit tur.
+- Widoki (`views.mjs`): obrót miejsc o k zamiast odbicia, ukrycie kart wszystkich pozostałych; testy 2-4 miejsca.
+- Serwer: stół ma 2-4 miejsc (`players`), widoki w kolumnie `views` z migracją starych baz; testy API 26.
+- Interfejs: wybór liczby graczy (gra lokalna i hub online), przeciwnicy w pętli, nazwy w kolejności widoku, wyniki
+  dla wielu graczy; `tests/multiplayer-ui.test.mjs` (SSR). **Układ stołu 3-4 graczy nie był oglądany w przeglądarce.**
+
 ## Zrobione i zweryfikowane
 
 - **Wdrożenie podstawowe** (poprzednie tury): front działa na serwerze (potwierdził Właściciel),

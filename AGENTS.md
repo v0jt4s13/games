@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.4.0** (2026-10-30) - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.5.1** (2026-10-31) - komplet grafik kart Ameryki, uwaga o nazwach plików. 1.5.0 (2026-10-30) - Remik i Poker dla 2-4 graczy (silniki, widoki, stoły, interfejs). 1.4.0 - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -29,16 +29,17 @@ Bez zewnętrznych API i bez kont (tożsamość to ciasteczko). Poza `geopolitics
 
 - Katalog `app_games/` jest kluczem aplikacji w `appctl`/`projects_manager`, a projekt Vite
   siedzi poziom niżej. Komendy `npm` uruchamiaj w `geopolitics/`.
-- Testy: `npm test` w `geopolitics/` (build, silniki, renderowanie, kompletność kart, widoki i pełne gry
-  AI-vs-AI online) oraz `python3 -m unittest discover -s tests` w `app_games/` (API end-to-end i limity, wymaga `node`).
+- Testy: `npm test` w `geopolitics/` (build, silniki, renderowanie, kompletność kart, widoki, pełne gry
+  AI-vs-AI online i mecze 3-4 graczy) oraz `python3 -m unittest discover -s tests` w `app_games/` (API end-to-end i limity, wymaga `node`).
   Zmiana silnika albo `views.mjs` = oba zestawy.
 
 ## Pułapki
 
 - **Manifest grafik kart liczy się z `public/cards` względem roota Vite** (`vite.config.ts`,
   `configResolved`). Wcześniej liczył się względem cwd, więc start z innego katalogu dawał
-  pusty manifest i karty bez obrazków, bez żadnego błędu. Grafiki ma na razie tylko `europe`
-  (brak `public/cards/america`).
+  pusty manifest i karty bez obrazków, bez żadnego błędu. Obie talie (`europe`, `america`) mają
+  komplet grafik (po 44). **Nazwa pliku musi równać się kluczowi karty** (np. `orban.webp`, bez akcentu):
+  plik o innej nazwie jest po cichu pomijany, więc po dodaniu grafik sprawdź pokrycie (`collectCardArt` vs `deckFor`).
 - **Build używa ścieżek względnych** (`base: './'`), więc pod prefiksem adres musi kończyć
   się `/` (`/games/`). `wsgi.py` przekierowuje `/games` na `/games/`; nie zmieniaj tego na
   ścieżki bezwzględne bez sprawdzenia `standalone.html`.
@@ -54,8 +55,12 @@ Bez zewnętrznych API i bez kont (tożsamość to ciasteczko). Poza `geopolitics
   online; zachowuj zgodność wsteczną (np. `action.seat` w wymianie kart Geopolitix jest opcjonalne, a
   `setActorNames` domyślnie wyłączone, więc lokalnie nadal "Ty"/"Komputer").
 - **Ukryta informacja online tylko przez `geopolitics/server/views.mjs`.** Nowe pole stanu z tajnymi
-  kartami albo stanem losowania musi tam trafić (ukrycie i odbicie miejsc), inaczej wycieknie do
-  przeciwnika. `tests/online.test.mjs` sprawdza szczelność na pełnych grach - dopisz przypadek.
+  kartami albo stanem losowania musi tam trafić (ukrycie i obrót miejsc), inaczej wycieknie do
+  przeciwników. Nowe pole z indeksem miejsca (`turn`, `winner`...) trzeba tam obrócić. `tests/online.test.mjs`
+  sprawdza szczelność i obrót na pełnych grach (2-4 miejsca) - dopisz przypadek.
+- **Remik i Poker mają 2-4 graczy** (`newRummy(rng, n)`, `newPoker(rng, n)`), Geopolitix zawsze 2. Silniki nie
+  zakładają `1 - p`: kolejność liczą z `players.length`. Dwóch graczy zachowuje dotychczasowe reguły (heads-up).
+  Zmieniając poker sprawdź `tests/multiplayer.test.mjs` (zachowanie żetonów i kart w pełnych meczach 3-4 graczy).
 - **Serwer pod gunicornem ma 3 workery** (`production_manager.sh`), więc stan jest w SQLite, nie w pamięci;
   zapisy idą przez `store.tx()` (`BEGIN IMMEDIATE`). Nie dodawaj globalnego stanu w procesie.
 - **Node w runtime usługi**: systemd ma tylko PATH systemowy. `BUILD_CMD` zapisuje ścieżkę `node` do
