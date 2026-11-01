@@ -84,15 +84,17 @@ export function geoApply(state, action) {
   assert(s.phase==='roundEnd','Runda jeszcze trwa.');
   for(const pl of s.players)for(const r of rows)for(const c of pl.board[r])bury(s,c);
   for(const pl of s.players){pl.board=emptyRows();pl.events=emptyRows();pl.passed=false;}
-  s.round++;s.turn=(s.round-1)%2;s.phase='play';note(s,`Runda ${s.round}. Zachowujesz pozostałe karty na ręce; bez dodatkowego doboru.`);return s;
+  s.lastPlay=null;s.round++;s.turn=(s.round-1)%2;s.phase='play';note(s,`Runda ${s.round}. Zachowujesz pozostałe karty na ręce; bez dodatkowego doboru.`);return s;
  }
  const legal=geoActions(s).some(a=>a.type===action.type&&a.id===action.id&&a.target===action.target&&a.row===action.row);
  assert(legal,'Ten ruch nie jest teraz dostępny.');
- if(action.type==='pass') {player.passed=true;note(s,`${actorName(p)}: pas.`);finishTurn(s,p);return s;}
+ if(action.type==='pass') {s.lastPlay=null;player.passed=true;note(s,`${actorName(p)}: pas.`);finishTurn(s,p);return s;}
+ // Rows a tactic card touched, as [player, row] pairs: the UI marks them. Units and passes leave `lastPlay` empty.
+ let hit=null;
  const index=player.hand.findIndex(c=>c.id===action.id),c=player.hand.splice(index,1)[0];
  note(s,`${actorName(p)}: ${c.name}.`);
  if(c.type==='event') {
-  const row=action.row, targets=enemy.board[row].filter(x=>!immune(x));
+  const row=action.row, targets=enemy.board[row].filter(x=>!immune(x));hit=[[1-p,row]];
   if(c.effect==='tornado') {
    const min=Math.min(...targets.map(x=>geoPower(s,1-p,row,x)));
    const victims=new Set(targets.filter(x=>geoPower(s,1-p,row,x)===min).map(x=>x.id));
@@ -107,15 +109,17 @@ export function geoApply(state, action) {
   if(c.muster){const pulled=player.deck.filter(x=>x.muster===c.muster);player.deck=player.deck.filter(x=>x.muster!==c.muster);player.board[c.row].push(...pulled);note(s,`Muster: przywołano ${pulled.length} kart z talii.`);}
  } else {
   if(c.effect==='draw')player.hand.push(...player.deck.splice(0,1));
-  if(c.effect==='clear'){player.events=emptyRows();for(const r of rows)for(const x of player.board[r])delete x.sanction;}
+  if(c.effect==='clear'){hit=rows.filter(r=>player.events[r].length||player.board[r].some(x=>x.sanction)).map(r=>[p,r]);player.events=emptyRows();for(const r of rows)for(const x of player.board[r])delete x.sanction;}
   if(['decoy','protect','move'].includes(c.effect)) {
    const row=rows.find(r=>player.board[r].some(x=>x.id===action.target)),i=player.board[row].findIndex(x=>x.id===action.target),target=player.board[row][i];
+   hit=c.effect==='move'?[[p,row],[p,action.row]]:[[p,row]];
    if(c.effect==='protect')target.protected=true;
    else {player.board[row].splice(i,1);if(c.effect==='decoy'){delete target.protected;delete target.sanction;player.hand.push(target);}else player.board[action.row].push(target);}
   }
-  if(c.effect==='bribe') {const choices=enemy.grave.filter(x=>x.type==='unit'&&!x.hero),target=choices[Math.floor(random(s)*choices.length)];enemy.grave=enemy.grave.filter(x=>x.id!==target.id);player.board[target.row].push(target);}
+  if(c.effect==='bribe') {const choices=enemy.grave.filter(x=>x.type==='unit'&&!x.hero),target=choices[Math.floor(random(s)*choices.length)];enemy.grave=enemy.grave.filter(x=>x.id!==target.id);player.board[target.row].push(target);hit=[[p,target.row]];}
   bury(s,c);
  }
+ s.lastPlay=hit&&hit.length?{by:p,id:c.id,name:c.name,rows:hit,at:s.logSeq}:null;
  finishTurn(s,p);return s;
 }
 export function geoBotAction(state) {

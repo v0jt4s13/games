@@ -9,6 +9,14 @@ Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker) pod `https://ops02.jdbla
 wybór graczy na miejscach, zaproszenia linkiem, czat tekstowy (wzorowane na kronikach Aetherii).
 Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.md`.
 
+## Geopolitix na telefonie: nazwy wierszy i znacznik karty taktycznej (2026-11-01)
+
+- Nazwa wiersza (Dyplomacja / Gospodarka / Bezpieczeństwo) po prawej stronie każdego wiersza, litery od góry do dołu; rozmiar
+  liczony z wysokości wiersza (`cqh`). Z `.stat-side` usunięte wyniki rzędów i linia efektów.
+- Karta taktyczna (wydarzenie, wymiana, ochrona, przesunięcie, oczyszczenie, łapówka) zapisuje w silniku `state.lastPlay`;
+  telefon podświetla te wiersze ok. 4,5 s (nie po wczytaniu zapisu). Test: `tests/tactic-marks.test.mjs` (5), widok drugiego
+  gracza obraca miejsca. Nie oglądane na telefonie.
+
 ## Geopolitix na telefonie (2026-11-01)
 
 - Układ jednoekranowy (<= 600 px): plansza z samych grafik kart (szczegóły po dotknięciu, w tym "Siła teraz"), statystyki

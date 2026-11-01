@@ -130,7 +130,14 @@
 .geo-phone-root{display:flex;flex-direction:column;gap:6px;min-height:460px;position:relative}
 .geo-boards{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
 .geo-side{flex:3 1 0;min-height:0;display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:4px;padding:5px;border-radius:14px}
-.geo-row{display:flex;align-items:stretch;justify-content:center;gap:3px;min-height:0;min-width:0;padding:3px;border:1px dashed var(--felt-rule);border-radius:8px;background:var(--felt-tint)}
+.geo-row{position:relative;container-type:size;display:flex;align-items:stretch;justify-content:center;gap:3px;min-height:0;min-width:0;padding:3px 19px 3px 3px;border:1px dashed var(--felt-rule);border-radius:8px;background:var(--felt-tint)}
+/* row name on the right, letters running top to bottom; sized to the row height so "Bezpieczeństwo" always fits */
+.geo-row-name{position:absolute;top:0;bottom:0;right:4px;display:flex;align-items:center;writing-mode:vertical-rl;font-size:.58rem;font-size:min(.66rem,11cqh);line-height:1;letter-spacing:.03em;white-space:nowrap;color:var(--felt-muted);pointer-events:none}
+/* rows touched by the last tactic card */
+.geo-row.marked{border:2px solid var(--felt-gold);padding:2px 18px 2px 2px;background:var(--felt-hover);box-shadow:0 0 12px var(--felt-gold);animation:geo-mark 1.1s ease-in-out 4}
+.geo-row.marked .geo-row-name{color:var(--felt-gold);font-weight:700}
+@keyframes geo-mark{50%{box-shadow:0 0 2px var(--felt-gold)}}
+@media(prefers-reduced-motion:reduce){.geo-row.marked{animation:none}}
 .geo-tile{flex:0 1 auto;min-width:0;min-height:0;height:100%;aspect-ratio:2/3;padding:0;gap:0;border:1px solid #c7c9b6;border-radius:5px;overflow:hidden;background:var(--card);box-shadow:0 2px 5px #0003}
 .geo-tile.hero-card{border-color:#ab853b;box-shadow:0 0 0 1px #ab853b,0 2px 5px #0003}
 .geo-tile img{display:block;width:100%;height:100%;object-fit:cover}
@@ -139,7 +146,7 @@
 .stat-side{display:flex;flex-direction:column;gap:1px;min-width:0}.stat-1{align-items:flex-end;text-align:right}
 .stat-side strong{font-size:.8rem}.stat-side span{font-size:.62rem;color:var(--felt-muted)}
 .stat-total{font-family:var(--font-title);font-size:1.7rem;line-height:1.05;font-variant-numeric:tabular-nums}
-.stat-side small{font-size:.58rem;color:var(--felt-muted);line-height:1.25}.stat-events{color:var(--felt-gold)!important}
+.stat-side small{font-size:.58rem;color:var(--felt-muted);line-height:1.25}
 .stat-mid{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .stat-mid>strong{font-size:.72rem}.stat-wins{font-family:var(--font-title);font-size:1.35rem;font-variant-numeric:tabular-nums}
 .stat-mid .turn-badge{font-size:.62rem;white-space:normal;justify-content:center}

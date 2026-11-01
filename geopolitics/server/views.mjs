@@ -63,6 +63,10 @@ function geoRotate(s, k) {
   s.wins = rot(s.wins, k);
   if (s.mulliganDone) s.mulliganDone = rot(s.mulliganDone, k);
   s.history.forEach(h => { h.score = rot(h.score, k); });
+  if (s.lastPlay) {                      // the rows the last tactic card touched: [seat, row] pairs
+    s.lastPlay.by = seatOf(s.lastPlay.by, k, n);
+    s.lastPlay.rows = s.lastPlay.rows.map(([p, r]) => [seatOf(p, k, n), r]);
+  }
   const owned = c => { if (typeof c.owner === 'number') c.owner = seatOf(c.owner, k, n); };
   for (const p of s.players) {
     p.hand.forEach(owned); p.grave.forEach(owned);

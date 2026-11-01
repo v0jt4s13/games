@@ -41,7 +41,13 @@ test('Geopolitix na telefonie: plansza z samych grafik, statystyki w srodku, okn
   // stats between the two boards: totals, round, wins, piles and row scores
   const stats = board.indexOf('geo-stats');
   assert.ok(board.indexOf('side-1') < stats && stats < board.indexOf('side-0'), 'statystyki maja byc miedzy planszami');
-  for (const text of ['Runda 1', 'Ręka ', 'Talia ', 'Cm. ', 'Dypl. ', 'Gosp. ', 'Bezp. ']) assert.ok(board.includes(text), text);
+  for (const text of ['Runda 1', 'Ręka ', 'Talia ', 'Cm. ']) assert.ok(board.includes(text), text);
+  // stats no longer list row scores or active effects; the row names sit on the board, on the right of each row
+  for (const gone of ['Dypl.', 'Gosp.', 'Bezp.', 'stat-events']) assert.ok(!board.includes(gone), `${gone} zniknelo ze statystyk`);
+  assert.equal((board.match(/class="geo-row-name"/g) || []).length, 6);
+  for (const row of ['Dyplomacja', 'Gospodarka', 'Bezpieczeństwo']) assert.equal((board.match(new RegExp(`class="geo-row-name"[^>]*>${row}<`, 'g')) || []).length, 2, row);
+  // a restored game does not glow: rows are marked only by a tactic played while the screen is open
+  assert.ok(!s.play.includes('geo-row marked'));
   // one screen: no tactics column, hand section, round banner or log on the page; hand opens from the bar
   assert.ok(!s.play.includes('class="tactics"') && !s.play.includes('hand-section') && !s.play.includes('match-strip'));
   assert.match(s.play, /geo-actionbar"><button class="primary">Ręka <b>\d+<\/b>/);

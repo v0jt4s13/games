@@ -1,6 +1,6 @@
 import {trackMove} from './trace.mjs';
 import {cardArtUrl} from './cardArt.mjs';
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import {newGeo,geoApply,geoBotAction,geoActions,geoTotals,geoScores,geoPower} from './engines/geopolitix.mjs';
 import {rows,rowLabels,factionLabels} from './data/geopolitix.mjs';
 import {Icon,GameLog,Outcome,TurnBadge,useOnline} from './ui';
@@ -29,6 +29,9 @@ export default function GeoGame({state,setState,run,paused}:any) {
  const {online,opponent}=useOnline();
  const [faction,setFaction]=useState('europe'),[selected,setSelected]=useState<string|null>(null),[exchange,setExchange]=useState<string[]>([]),[inspect,setInspect]=useState<any>(null),phone=usePhone(),fillRef=useFillHeight(phone),[handOpen,setHandOpen]=useState(false),[seenOver,setSeenOver]=useState(false);
  useEffect(()=>{if(state?.phase==='mulligan'&&!state.mulliganDone?.[0])setHandOpen(true);},[state?.phase]);
+ // Rows touched by the last tactic card (state.lastPlay from the engine) glow for a few seconds. A game restored from a save does not.
+ const playKey=state?.lastPlay?`${state.lastPlay.id}@${state.lastPlay.at}`:'',seenPlay=useRef<string|null>(null),[marks,setMarks]=useState<any>(null);
+ useEffect(()=>{if(seenPlay.current===null){seenPlay.current=playKey;return;}if(!playKey){setMarks(null);return;}if(playKey===seenPlay.current)return;seenPlay.current=playKey;setMarks({rows:state.lastPlay.rows.map(([p,r]:any)=>`${p}:${r}`)});const id=setTimeout(()=>setMarks(null),4500);return()=>clearTimeout(id);},[playKey]);
  useEffect(()=>{if(state?.phase==='play'&&state.turn===1&&!paused&&!online){const id=setTimeout(()=>run(()=>{setSelected(null);return trackMove(state,geoBotAction(state),geoApply);}),650);return()=>clearTimeout(id);}},[state,paused]);
  if(!state)return <div className="setup geo-setup"><img src="./geopolitix-cover.webp" alt="Ilustracja Geopolitix: światowi przywódcy i mapa świata"/><div><h2>Świat jest Twoim stołem.</h2><p>Wybierz frakcję. Zachowaj karty na kolejne rundy, wykorzystaj serie i uderz w słabości rywala.</p><fieldset><legend>Twoja frakcja</legend>{['europe','america'].map(f=><label className="faction-choice" key={f}><input type="radio" name="faction" checked={faction===f} onChange={()=>setFaction(f)}/><span><strong>{factionLabels[f]}</strong><small>50 kart · {f==='europe'?'Koalicje, dyplomacja, Blackout':'Serie, technologia, Tornado'}</small></span></label>)}</fieldset><p className="muted">2 graczy · do dwóch wygranych rund · przeciwnik komputerowy</p><button className="primary" onClick={()=>setState(newGeo(faction))}>Rozdaj 21 kart <Icon name="arrow"/></button></div></div>;
  const totals=geoTotals(state),scores=geoScores(state),hand=state.players[0].hand;
@@ -39,13 +42,12 @@ export default function GeoGame({state,setState,run,paused}:any) {
  const actionLabel=(a:any)=>{const target=rows.flatMap(r=>state.players[0].board[r]).find(c=>c.id===a.target);return target?`${target.name}${a.row?' → '+rowLabels[a.row]:''}`:a.row?`${rowLabels[a.row]} rywala`:'Zagraj kartę';};
 
  if(phone) {
-  const short:any={diplomacy:'Dypl.',economy:'Gosp.',defense:'Bezp.'},effects:any={blackout:'Blackout',half:'½ siły',silence:'Bez premii',strike:'Strajk'};
   const order=(p:number)=>p===1?[...rows].reverse():rows,name=(p:number)=>p===0?'Ty':(online?opponent:'Komputer');
   const where=(card:any)=>{for(const p of [0,1])for(const r of rows)if(state.players[p].board[r].some((x:any)=>x.id===card.id))return {p,r};return null;};
   const mulligan=state.phase==='mulligan',playable=state.phase==='play',myTurn=playable&&state.turn===0;
   const details=(card:any)=>{const at=where(card);return <><GeoArtPreview key={card.id} card={card}/><div className="selected-name"><strong>{card.name}</strong><span>{card.power?`${card.power} siły bazowej`:'Karta taktyczna'} · {Array.isArray(card.row)?card.row.map((r:string)=>rowLabels[r]).join(' / '):rowLabels[card.row]||'Taktyka'}{card.hero?' · Lider':card.muster?' · Seria':''}</span></div>{at&&<p><b>Siła teraz: {geoPower(state,at.p,at.r,card)}</b> · {at.p===0?'Twoja plansza':'Plansza rywala'}, {rowLabels[at.r]}{card.protected?' · ochrona':''}{card.sanction?' · sankcje':''}</p>}<p>{card.desc}</p></>;};
-  const board=(p:number)=><section className={`geo-side felt side-${p}`} aria-label={p===0?'Twoja plansza':(online?`Plansza: ${opponent}`:'Plansza komputera')}>{order(p).map(row=>{const cards=state.players[p].board[row];return <div className="geo-row" key={row} aria-label={`${rowLabels[row]}: ${scores[p][row]}`}>{cards.map((c:any)=><GeoTile key={c.id} card={c} power={geoPower(state,p,row,c)} onClick={()=>{setInspect(c);setSelected(null);}}/>)}</div>;})}</section>;
-  const side=(p:number)=>{const pl=state.players[p],active=rows.flatMap(r=>pl.events[r].map((e:any)=>`${short[r]}: ${effects[e.type]}`));return <div className={`stat-side stat-${p}`}><strong>{name(p)}</strong><span>{factionLabels[pl.faction]}{pl.passed?' · PAS':''}</span><b className="stat-total">{totals[p]}</b><small>Ręka {pl.hand.length} · Talia {pl.deck.length} · Cm. {pl.grave.length}</small><small>{order(p).map(r=>`${short[r]} ${scores[p][r]}`).join(' · ')}</small>{active.length>0&&<small className="stat-events">{active.join(' · ')}</small>}</div>;};
+  const board=(p:number)=><section className={`geo-side felt side-${p}`} aria-label={p===0?'Twoja plansza':(online?`Plansza: ${opponent}`:'Plansza komputera')}>{order(p).map(row=>{const cards=state.players[p].board[row];return <div className={`geo-row ${marks?.rows.includes(`${p}:${row}`)?'marked':''}`} key={row} aria-label={`${rowLabels[row]}: ${scores[p][row]}`}>{cards.map((c:any)=><GeoTile key={c.id} card={c} power={geoPower(state,p,row,c)} onClick={()=>{setInspect(c);setSelected(null);}}/>)}<span className="geo-row-name" aria-hidden="true">{rowLabels[row]}</span></div>;})}</section>;
+  const side=(p:number)=>{const pl=state.players[p];return <div className={`stat-side stat-${p}`}><strong>{name(p)}</strong><span>{factionLabels[pl.faction]}{pl.passed?' · PAS':''}</span><b className="stat-total">{totals[p]}</b><small>Ręka {pl.hand.length} · Talia {pl.deck.length} · Cm. {pl.grave.length}</small></div>;};
   return <div className="geo-phone-root" ref={fillRef}>
    <div className="geo-boards">
     {board(1)}
