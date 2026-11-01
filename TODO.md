@@ -23,6 +23,13 @@ Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 
 ## P2 - niedokończone fragmenty i luki
 
+- [ ] **Geopolitix na telefonie: układ jednoekranowy nie był oglądany na urządzeniu.** Test renderowania sprawdza strukturę,
+  ale nie wysokości, zawijanie ani dotyk. Sprawdzić na telefonie: wysokość planszy, czytelność przy wielu kartach w rzędzie
+  (karty zwężają się i są przycinane), warstwy, przy okazji też tryb online (plansza liczy wysokość od swojej pozycji).
+- [ ] **Do akceptacji (propozycje, nie wdrożone):** (1) małe etykiety rzędów na planszy, bo bez nich rzędy rozpoznaje się
+  tylko po układzie; (2) menu z dziennikiem gry, trybem testowym i zasadami (na telefonie w Geopolitix są dziś niedostępne
+  tryb testowy, stopka i dziennik); (3) przycisk „Zobacz planszę” w oknie końca rundy; (4) ten sam układ dla Remika i Pokera.
+
 - [ ] **Poker i Remik dla 3-4 graczy: układ w przeglądarce.** Silniki i widoki są przetestowane (pełne mecze
   3-4 graczy, szczelność widoków, renderowanie), ale układ stołu na wąskich ekranach (4 miejsca, 6 zakrytych kart
   przeciwników) nie był oglądany. Do sprawdzenia razem z testem online (P1).

@@ -9,6 +9,14 @@ Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker) pod `https://ops02.jdbla
 wybór graczy na miejscach, zaproszenia linkiem, czat tekstowy (wzorowane na kronikach Aetherii).
 Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.md`.
 
+## Geopolitix na telefonie (2026-11-01)
+
+- Układ jednoekranowy (<= 600 px): plansza z samych grafik kart (szczegóły po dotknięciu, w tym "Siła teraz"), statystyki
+  (suma, ręka/talia/cmentarz, wyniki rzędów, efekty, pas, runda, wygrane rundy, tura) w pasie między planszami, ręka jako
+  warstwa z listą grafik, dotknięcie karty otwiera kolejną warstwę z ruchami, koniec rundy jako okno na środku.
+  Przy wymianie kart warstwa ręki otwiera się sama. Test: `tests/phone.test.mjs` (render z wymuszonym telefonem); `npm test` 54.
+  **Nie oglądany na telefonie.** Propozycje do akceptacji: `TODO.md`.
+
 ## Grafiki kart Ameryki (2026-10-31)
 
 - `public/cards/america`: 44 karty, WebP 512x768 (82,8 MB -> 4,1 MB); obie talie mają komplet grafik (44/44).
