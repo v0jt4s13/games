@@ -94,5 +94,5 @@ Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.
   propozycje dodatków zgłaszaj do akceptacji (`TODO.md`), nie wdrażaj ich. Układ telefoniczny dotyczy tylko Geopolitix.
 - Kroniki Aetherii (`ops02/app_kroniki-aetherii-part-1`) to osobne repo Właściciela. Lokalny obraz Dockera jest wersją z drzewa
   roboczego (zbudowany 2026-11-02 02:31, przed `Release 0.1.3`); aktualizuje go `appctl --restart ops02/app_kroniki-aetherii-part-1`.
-- Główny `/home/vs/repo/AGENTS.md` nie jest pod gitem (sekcja 1.14 opisuje `app_games`).
+- Główny `/home/vs/repo/AGENTS.md` nie jest pod gitem (wiersz `app_games` w tabeli rozdziału 1 wskazuje ten projekt).
 - Kopie `ops02/dev-files/app_games/cards-zrodla/` (paczki grafik) są poza gitem.
