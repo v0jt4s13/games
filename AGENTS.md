@@ -33,6 +33,24 @@ Bez zewnętrznych API i bez kont (tożsamość to ciasteczko). Poza `geopolitics
   AI-vs-AI online i mecze 3-4 graczy) oraz `python3 -m unittest discover -s tests` w `app_games/` (API end-to-end i limity, wymaga `node`).
   Zmiana silnika albo `views.mjs` = oba zestawy.
 
+## Wspólne funkcje aplikacji gier
+
+Każda istniejąca i nowo dodawana gra w `ops02/app_games/` oraz
+`ops02/app_kroniki-aetherii-part-1/` ma docelowo zapewniać:
+
+- konta z odzyskaniem rozgrywki na innym urządzeniu oraz logowanie Google;
+- rozmowę głosową, wybór mikrofonu i lokalne wyciszanie rozmówców;
+- wybór języka PL/EN/CS zapisany w przeglądarce, działający bez resetowania gry;
+- statystyki odwiedzin ukryte przed publicznym widokiem, na osobnej stronie z kontrolą dostępu;
+- rozgrywkę dla 2-4 graczy, z ludźmi i SI (Geopolitix wymaga również dalszych frakcji).
+
+To wymagania docelowe, nie opis obecnych możliwości. Braki i stan wdrożenia są w `TODO.md`;
+priorytetem jest PL/EN/CS. Przy dodaniu gry sprawdź wszystkie punkty i jawnie zapisz braki.
+Tłumacz interfejs, zasady, opisy kart i komunikaty systemowe; nigdy imiona ani czat graczy.
+Nie uzależniaj reguł gry, identyfikatorów, zapisów ani protokołu API od języka. Zmiana języka
+nie może resetować gry, formularzy, połączeń ani zaproszeń. Zachowaj istniejący system motywów.
+Utrzymanie PL/EN/CS, słowniki i zasady zgodności komunikatów: `docs/LANGUAGES.md`.
+
 ## Pułapki
 
 - **Manifest grafik kart liczy się z `public/cards` względem roota Vite** (`vite.config.ts`,
