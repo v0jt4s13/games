@@ -80,6 +80,13 @@ Utrzymanie PL/EN/CS, słowniki i zasady zgodności komunikatów: `docs/LANGUAGES
   więc paczki `.zip`, PNG i oryginały 1024x1536 zostają poza drzewem (`ops02/dev-files/app_games/`;
   `.gitignore` odrzuca `.zip` i `.png` w `public/cards`). Manifest i tak woli `.webp` przed `.png`.
   Konwersja: Pillow, `resize((512, 768), LANCZOS)`, `save(..., 'WEBP', quality=80, method=6)`.
+- Przy nowych frakcjach dopasuj ilustracje do istniejącej talii, zamiast zmieniać jej styl:
+  dla Geopolitix wzorcem są m.in. `geopolitics/public/cards/europe/orban.webp` i
+  `blackout.webp` - komiks 2D, wyraźny ciemny kontur, uproszczone kształty, nasycone kolory
+  i cel-shading. Zachowaj temat oraz kompozycję karty; przed generowaniem portretów nowych
+  postaci pokaż listę do zatwierdzenia. Jeśli generator odrzuca portrety nazwanych osób,
+  wstrzymaj je i zapisz brakujące klucze w dokumentacji, zamiast tworzyć duplikaty albo
+  nieuzgodnione zamienniki.
 - **Silniki są wspólne dla trybu lokalnego i serwera.** Zmiana w `geopolitics/src/engines/` zmienia też grę
   online; zachowuj zgodność wsteczną (np. `action.seat` w wymianie kart Geopolitix jest opcjonalne, a
   `setActorNames` domyślnie wyłączone, więc lokalnie nadal "Ty"/"Komputer").
