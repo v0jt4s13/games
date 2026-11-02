@@ -1,6 +1,6 @@
 # TASK_STATUS - app_games
 
-Stan na 2026-10-30. Plik nadpisywany przy kolejnym przekazaniu (nie jest historią).
+Stan na 2026-11-02. Plik nadpisywany przy kolejnym przekazaniu (nie jest historią).
 
 ## Cel
 
@@ -70,9 +70,11 @@ Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.
 
 ## Kolejne kroki
 
-1. Wypchnąć kod (repo `v0jt4s13/games`) i na serwerze `git pull` w `projects_manager` (zmieniony `games.env`),
-   sprawdzić `.env` serwera (ma pierwszeństwo), potem `./deploy.sh update` (kontrola `/api/health`).
-2. Przetestować w dwóch przeglądarkach (P1 w `TODO.md`), poprawić znalezione błędy interfejsu.
+1. Kod jest wypchnięty (`origin/main` = `cf3839a`, repo `v0jt4s13/games`). Na serwerze: `git pull` w `projects_manager`
+   (zmieniony `games.env`), sprawdzić `.env` serwera (ma pierwszeństwo), potem `./deploy.sh update` (kontrola `/api/health`).
+   Czy stoły online i układ telefoniczny są już wdrożone na ops02, nie ustalono.
+2. Przetestować na telefonie i w dwóch przeglądarkach (P1 w `TODO.md`): układ telefoniczny Geopolitix, nazwy wierszy,
+   podświetlenie wiersza po karcie taktycznej, stoły 3-4 graczy. Serwer LAN: `http://192.168.0.151:5007/` (`appctl`).
 3. Reszta `TODO.md` (kopie bazy, głos, konta, SSE, limity).
 
 ## Otwarte decyzje Właściciela
@@ -84,7 +86,13 @@ Architektura i protokół: `docs/ONLINE.md`. Braki i rzeczy do zrobienia: `TODO.
 
 - Silniki są wspólne dla gry lokalnej i serwera; ukryta informacja online przechodzi wyłącznie przez
   `geopolitics/server/views.mjs`. Szczegóły i pułapki: `AGENTS.md`.
-- `tools/` ma niezacommitowane zmiany `appctl.py`, `appctl_tests.py`, `README.md` (wpis `app_games`);
-  cudze nieśledzone `disk-audit.sh`, `depricated/reelgen-zlecenia.tar.gz` zostają.
+- `tools/`: commit `94b1c35` (start/restart zestawów Compose budują obraz) jest niewypchnięty; cudze nieśledzone
+  `disk-audit.sh` i `depricated/reelgen-zlecenia.tar.gz` zostają.
+- **Niezacommitowana praca Właściciela w `app_games`:** `geopolitics/src/main.tsx` i `style.css` (kafelek „Kroniki Aetherii” w lobby,
+  stopka „Cztery gry”). Nie commituj tego przy okazji innych zmian.
+- Zmiany wizualne: Właściciel testuje na telefonie przez LAN (`appctl`, port 5007) i oczekuje dokładnie tego, o co prosi;
+  propozycje dodatków zgłaszaj do akceptacji (`TODO.md`), nie wdrażaj ich. Układ telefoniczny dotyczy tylko Geopolitix.
+- Kroniki Aetherii (`ops02/app_kroniki-aetherii-part-1`) to osobne repo Właściciela. Lokalny obraz Dockera jest wersją z drzewa
+  roboczego (zbudowany 2026-11-02 02:31, przed `Release 0.1.3`); aktualizuje go `appctl --restart ops02/app_kroniki-aetherii-part-1`.
 - Główny `/home/vs/repo/AGENTS.md` nie jest pod gitem (sekcja 1.14 opisuje `app_games`).
 - Kopie `ops02/dev-files/app_games/cards-zrodla/` (paczki grafik) są poza gitem.
