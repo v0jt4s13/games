@@ -88,10 +88,15 @@ W działającym npm run dev wystarczy odświeżyć stronę: lista plików skanow
 
 ## Ręczna weryfikacja przed publikacją
 
+Języki PL/EN/CS są dostępne w nagłówku. Wybór zapisuje się w przeglądarce i nie resetuje
+rozgrywki. Zakres, utrzymanie słowników i testy: [docs/LANGUAGES.md](../docs/LANGUAGES.md).
+
 1. Otwórz panel w szerokościach 360 px i desktopowej; sprawdź trzy motywy oraz ich zachowanie po odświeżeniu.
 2. W Geopolitix wybierz frakcję, wymień 3 karty, zagraj kartę i spasuj; przejdź do kolejnej rundy.
 3. W Remiku dobierz, zaznacz układ, użyj przygotowania i podpowiedzi, odrzuć jedną kartę; sprawdź próg 51 i dokładanie.
 4. W Pokerze sprawdź zakład, podbij, zagraj all-in i następne rozdanie. Weryfikuj zakrycie kart do showdown.
 5. Przełącz gry, odśwież stronę, otwórz i zamknij zasady klawiszem Escape, sprawdź restart z anulowaniem i klawiaturę.
+6. Zmień PL/EN/CS podczas gry i pisania na czacie. Sprawdź zachowanie partii, zaznaczeń,
+   wiadomości i wybranego języka po odświeżeniu; sprawdź dłuższe etykiety na telefonie w obu motywach.
 
 Wdrożenie pozostaje decyzją właściciela. Gotowy katalog dist można serwować statycznie pod dowolnym prefiksem, bo base w Vite jest względne.

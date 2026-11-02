@@ -1,9 +1,35 @@
 # TODO - app_games
 
-Stan na 2026-10-30. Priorytet: **P1** blokuje albo grozi wdrożeniu, **P2** ważne, **P3** pomysły.
+Stan na 2026-11-02. Priorytet: **P1** blokuje albo grozi wdrożeniu, **P2** ważne, **P3** pomysły.
 Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 
+## Wspólny standard aplikacji gier - kolejność realizacji
+
+Decyzja Właściciela: zaczynamy od **4. PL/EN/CS**. Numeracja poniżej odpowiada liście
+wymagań, nie kolejności wykonania. Standard obowiązuje obecne i nowe aplikacje gier;
+reguła trwała: `AGENTS.md`, sekcja „Wspólne funkcje aplikacji gier”.
+
+1. [ ] **Konta i odzyskiwanie rozgrywek na innym urządzeniu.** Przypisanie miejsca i zapisów
+   do konta; migracja obecnej tożsamości opartej na ciasteczku bez utraty gry.
+2. [ ] **Logowanie Google.** Powiązanie z kontem aplikacji; konfiguracja OAuth na docelowych domenach.
+3. [ ] **Rozmowa głosowa.** WebRTC + własny TURN, wybór mikrofonu, lokalne wyciszanie
+   rozmówców; odbiór na dwóch urządzeniach. Punktem odniesienia są Kroniki Aetherii.
+4. [x] **Wybór języka PL/EN/CS - wdrożony w kodzie jako pierwszy.** Zapamiętany wybór, zmiana
+   bez utraty rozgrywki, tłumaczenia interfejsu, zasad, opisów kart i komunikatów systemowych;
+   imiona i wiadomości graczy pozostają bez zmian. Kroniki już mają PL/EN/CS.
+   Zakres zgodności starszych komunikatów i diagnostyki: `docs/LANGUAGES.md`.
+5. [ ] **Ukryte statystyki odwiedzin na osobnej nowej stronie.** Bez publicznego licznika
+   na stronie głównej; dostęp do raportu po autoryzacji (sam niepodlinkowany URL nie wystarcza).
+   Ujednolicić również Kroniki, które obecnie pokazują licznik publicznie.
+6. [ ] **Geopolitix dla 2-4 osób / SI.** Dokończyć dodawanie frakcji (talie, grafiki, reguły),
+   rozszerzyć silnik, boty, lokalny i online interfejs oraz ukrywanie informacji na 3-4 miejsca.
+   Zweryfikować pełne partie i zgodność zapisów dwuosobowych. Remik, Poker i Kroniki mają już 2-4 graczy.
+
 ## P1 - przed uznaniem wdrożenia za gotowe
+
+- [ ] **Odbiór PL/EN/CS w przeglądarce i wdrożenie.** Sprawdzić telefon/desktop w obu motywach,
+  zmianę języka w trakcie partii, zachowanie zaznaczonych kart i niewysłanej wiadomości,
+  odświeżenie i synchronizację między kartami. Automatyczne testy renderowania nie zastępują odbioru wizualnego.
 
 - [ ] **Test interfejsu online w przeglądarce.** Nowy interfejs (hub, poczekalnia, miejsca, zaproszenia,
   rozgrywka, czat) przeszedł tylko `tsc`, build i testy API; nie był oglądany w przeglądarce.
@@ -38,10 +64,6 @@ Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 - [ ] **Gra lokalna 3-4 graczy**: komputery grają po kolei co ok. 0,6-0,85 s; przy czterech graczach rozdanie
   trwa dłużej. Pauza i "jeden ruch komputera" w trybie testowym działają dla dowolnego komputera.
 
-- [ ] **Głos** (jest w kronikach: WebRTC + TURN, "Mic", wyciszanie). Tu tylko tekst. Wymaga TURN
-  (`compose.turn.yaml` z kronik) i HTTPS; osobny etap.
-- [ ] **Konta i zaproszenia przypisane do konta** (w kronikach: logowanie Google). Teraz tożsamość to ciasteczko;
-  utrata ciasteczka = nowe zaproszenie od gospodarza.
 - [ ] **Polling zamiast WebSocket/SSE.** Opóźnienie ruchu przeciwnika do ok. 1 s, a gunicorn ma 3 workery
   sync; przy większym ruchu przejść na SSE/long-poll (wymaga `proxy_buffering off` w nginx) albo na wątki.
 - [ ] **Brak optymistycznego UI**: po ruchu widok odświeża się dopiero po odpowiedzi serwera (ok. 0,2-1 s).
@@ -66,7 +88,6 @@ Opis działania: `docs/ONLINE.md`, przekazanie: `TASK_STATUS.md`.
 ## P3 - pomysły
 
 - [ ] Otwarte stoły (lista publiczna, dobieranie), widzowie, powtórki partii.
-- [ ] Więcej niż dwóch graczy (silniki są dwuosobowe: poker wieloosobowy, remik 2-4).
 - [ ] Rankingi i statystyki.
 - [ ] Zaproszenia e-mailem (w kronikach też poza MVP).
 - [ ] Historia gita ma 146 MB (zipy i PNG z pierwszego commita) - przepisanie historii tylko za zgodą Właściciela.
