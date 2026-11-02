@@ -1,3 +1,4 @@
+import {tr} from '../i18n';
 // HTTP client for the online tables (server/ in app_games). Paths are relative to the page, so the app
 // works under a prefix (/games/) and in dev (Vite proxies /api).
 export class ApiError extends Error {
@@ -33,4 +34,4 @@ export function parseInvite(text: string): string {
   return decodeURIComponent(at >= 0 ? raw.slice(at + 8) : raw).trim();
 }
 
-export const gameNames: Record<string, string> = {geo: 'Geopolitix', rummy: 'Remik', poker: 'Poker'};
+export const gameNames: Record<string, string> = {geo: 'Geopolitix', get rummy() { return tr('Remik'); }, poker: 'Poker'};

@@ -1,3 +1,4 @@
+import {tr} from "./i18n";
 import React,{useEffect,useRef,useState} from 'react';
 import {Icon} from './ui';
 import {cardArtUrl} from './cardArt.mjs';
@@ -25,11 +26,11 @@ export function useFillHeight(active:boolean) {
 export function Layer({title,onClose,center=false,level=1,children}:any) {
  useEffect(()=>{if(!onClose)return;const key=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose();};document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key);},[onClose]);
  return <div className={`geo-layer ${center?'center':''}`} style={{zIndex:30+level}} role="dialog" aria-modal="true" aria-label={title} onClick={e=>{if(e.target===e.currentTarget&&onClose)onClose();}}>
-  <div className="geo-layer-body">{onClose&&<button className="icon-button geo-layer-close" aria-label="Zamknij" onClick={onClose}><Icon name="close"/></button>}{children}</div></div>;
+  <div className="geo-layer-body">{onClose&&<button className="icon-button geo-layer-close" aria-label={tr("Zamknij")} onClick={onClose}><Icon name="close"/></button>}{children}</div></div>;
 }
 /** A card on the board: only its picture; details come in a layer after a tap. */
 export function GeoTile({card,power,onClick}:any) {
  const url=cardArtUrl(card),[failed,setFailed]=useState<string|null>(null),hasArt=!!url&&failed!==url;
- return <button className={`geo-tile ${card.faction} ${card.hero?'hero-card':''}`} onClick={onClick} aria-label={`${card.name}, siła ${power}`}>
+ return <button className={`geo-tile ${card.faction} ${card.hero?'hero-card':''}`} onClick={onClick} aria-label={tr("{0}, siła {1}", [tr(card.name), power])}>
   {hasArt?<img src={url} alt="" loading="lazy" decoding="async" onError={()=>setFailed(url)}/>:<b className="geo-tile-fallback">{power}</b>}</button>;
 }

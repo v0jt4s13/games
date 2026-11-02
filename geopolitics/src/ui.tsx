@@ -1,11 +1,12 @@
+import {tr, systemText} from "./i18n";
 import React from 'react';
 // Online tables: names of the other player and a plain game log (the detailed test log is local-only).
-export const OnlineContext=React.createContext<any>({online:false,opponent:'Komputer',names:null});
+export const OnlineContext=React.createContext<any>({online:false,opponent:tr("Komputer"),names:null});
 export const useOnline=()=>React.useContext(OnlineContext);
 // Name of the player at seat `i` (0 = me; the others follow in table order). Local games: Ty, Komputer, Komputer 2...
-export function useSeatName(){const {names}=useOnline();return (i:number,lower=false)=>names?names[i]:i===0?'Ty':lower?(i===1?'komputer':`komputer ${i}`):(i===1?'Komputer':`Komputer ${i}`);}
+export function useSeatName(){const {names}=useOnline();return (i:number,lower=false)=>names?names[i]:i===0?tr("Ty"):lower?(i===1?tr("komputer"):tr("komputer {0}", [i])):(i===1?tr("Komputer"):tr("Komputer {0}", [i]));}
 export function PlayerCount({value,onChange,max=4}:any) {
- return <fieldset className="player-count"><legend>Liczba graczy</legend>{Array.from({length:max-1},(_,k)=>k+2).map(n=><label className="faction-choice" key={n}><input type="radio" name="player-count" checked={value===n} onChange={()=>onChange(n)}/><span><strong>{n===2?'2 graczy':`${n} graczy`}</strong><small>{n===2?'Ty i komputer':`Ty i ${n-1} ${n===2?'komputer':'komputery'}`}</small></span></label>)}</fieldset>;
+ return <fieldset className="player-count"><legend>{tr("Liczba graczy")}</legend>{Array.from({length:max-1},(_,k)=>k+2).map(n=><label className="faction-choice" key={n}><input type="radio" name="player-count" checked={value===n} onChange={()=>onChange(n)}/><span><strong>{n===2?tr("2 graczy"):tr("{0} graczy", [n])}</strong><small>{n===2?tr("Ty i komputer"):tr("Ty i {0} {1}", [n-1, n===2?tr("komputer"):tr("komputery")])}</small></span></label>)}</fieldset>;
 }
 import {CardBackImage} from './CardBackSettings';
 import TraceLog from './TraceLog';
@@ -17,13 +18,13 @@ export function Icon({name,size=20}:{name:string,size?:number}) {
 export function PlayingCard({card,hidden=false,selected=false,onClick,small=false,disabled=false,backGame='poker'}:any) {
  const cls=`playing-card ${small?'small':''} ${hidden?'card-back':''} ${selected?'selected':''} ${card&&['H','D'].includes(card.suit)?'red':''}`;
  const content=hidden?<CardBackImage game={backGame}/>:<><span className="card-corner">{rankLabel(card.rank)}<small>{suitSymbol[card.suit]}</small></span><span className="card-suit" aria-hidden="true">{suitSymbol[card.suit]}</span><span className="card-bottom" aria-hidden="true">{rankLabel(card.rank)}</span></>;
- return onClick?<button className={cls} aria-label={cardLabel(card)} aria-pressed={selected} onClick={onClick} disabled={disabled}>{content}</button>:<div className={cls} aria-label={hidden?'Zakryta karta':cardLabel(card)} role="img">{content}</div>;
+ return onClick?<button className={cls} aria-label={cardLabel(card)} aria-pressed={selected} onClick={onClick} disabled={disabled}>{content}</button>:<div className={cls} aria-label={hidden?tr("Zakryta karta"):cardLabel(card)} role="img">{content}</div>;
 }
-export function CardBacks({count,game='rummy'}:any) {return <div className="opponent-hand" aria-label={`${count} kart przeciwnika`}>{Array.from({length:Math.min(count,7)},(_,i)=><PlayingCard key={i} hidden small backGame={game}/>)}<span className="hand-count">{count} kart</span></div>;}
+export function CardBacks({count,game='rummy'}:any) {return <div className="opponent-hand" aria-label={`${count} kart przeciwnika`}>{Array.from({length:Math.min(count,7)},(_,i)=><PlayingCard key={i} hidden small backGame={game}/>)}<span className="hand-count">{count}{tr(" kart")}</span></div>;}
 export function GameLog({state}:any) {
- const {online}=useOnline();
- if(online)return <details className="game-log" open><summary>Przebieg gry <span>{state.log.length} ostatnich komunikatów</span></summary><ol className="online-log">{[...state.log].reverse().map((line:string,i:number)=><li key={i}>{line}</li>)}</ol></details>;
+ const {online,names}=useOnline();
+ if(online)return <details className="game-log" open><summary>{tr("Przebieg gry ")}<span>{state.log.length}{tr(" ostatnich komunikatów")}</span></summary><ol className="online-log">{[...state.log].reverse().map((line:string,i:number)=><li key={i}>{systemText(line,names||[])}</li>)}</ol></details>;
  return <TraceLog state={state}/>;
 }
-export function Outcome({winner,children,players=2}:any) {const {online}=useOnline(),name=useSeatName();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?'Wygrywasz!':winner>0?(online||players>2?`Wygrywa ${name(winner)}.`:'Tym razem komputer.'):'Remis.'}</h2>{children}</div></section>;}
-export function TurnBadge({bot,text,who}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?`${who||(online?opponent:'Komputer')} myśli…`:'Twój ruch')}</span>;}
+export function Outcome({winner,children,players=2}:any) {const {online}=useOnline(),name=useSeatName();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?tr("Wygrywasz!"):winner>0?(online||players>2?tr("Wygrywa {0}.", [name(winner)]):tr("Tym razem komputer.")):tr("Remis.")}</h2>{children}</div></section>;}
+export function TurnBadge({bot,text,who}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?tr("{0} myśli…", [who||(online?opponent:tr("Komputer"))]):tr("Twój ruch"))}</span>;}
