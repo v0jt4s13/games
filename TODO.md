@@ -21,8 +21,8 @@ reguła trwała: `AGENTS.md`, sekcja „Wspólne funkcje aplikacji gier”.
 5. [ ] **Ukryte statystyki odwiedzin na osobnej nowej stronie.** Bez publicznego licznika
    na stronie głównej; dostęp do raportu po autoryzacji (sam niepodlinkowany URL nie wystarcza).
    Ujednolicić również Kroniki, które obecnie pokazują licznik publicznie.
-6. [ ] **Geopolitix dla 2-4 osób / SI.** Dokończyć dodawanie frakcji (Azja jest w grze od 2026-11-03; zostały Afryka
-   i Ameryka Południowa wg `geopolitics/docs/GEOPOLITIX-NEW-FACTIONS-PROPOSAL.md`: talie, tłumaczenia, wpis w `factions`/`GEO_FACTIONS`),
+6. [ ] **Geopolitix dla 2-4 osób / SI.** Frakcje Asia, Africa i South America są w grze od 2026-11-03 (5 frakcji;
+   balans do sprawdzenia na grach ludzi). Dokończyć:
    rozszerzyć silnik, boty, lokalny i online interfejs oraz ukrywanie informacji na 3-4 miejsca.
    Zweryfikować pełne partie i zgodność zapisów dwuosobowych. Remik, Poker i Kroniki mają już 2-4 graczy.
 

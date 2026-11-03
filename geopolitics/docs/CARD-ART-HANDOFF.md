@@ -11,7 +11,6 @@
 - `public/cards/africa/` zawiera komplet 44/44 ilustracji Afryki.
 - `public/cards/south_america/` zawiera komplet 44/44 ilustracji Ameryki Południowej i Środkowej.
 - Wszystkie trzy nowe zestawy sprawdzono: po 44 pliki WebP 512x768 px na frakcję.
-- Grafiki i zaakceptowane propozycje kart nie dodają frakcji do danych gry; implementacja kart, tłumaczeń i manifestu nadal wymaga osobnego zadania.
 
 ## Wzorzec i format
 
@@ -23,4 +22,4 @@
 
 ## Następny krok
 
-Grafiki Azji, Afryki i Ameryki Południowej i Środkowej są kompletne. Kolejnym etapem jest osobna implementacja zaakceptowanych talii w danych gry, tłumaczeniach i manifeście grafik.
+Wszystkie trzy talie (Asia, Africa, South America) są w danych gry, tłumaczeniach i manifeście grafik (2026-11-03). Kolejne frakcje wymagają nowej propozycji i grafik.

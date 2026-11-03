@@ -1,6 +1,6 @@
 # Geopolitix - propozycje nowych frakcji
 
-Status: **lista zaakceptowana przez Właściciela. Grafiki Azji, Afryki i Ameryki Południowej i Środkowej: po 44/44 gotowe. Na polecenie Właściciela karty Netanjahu i Gandhiego zastąpiono kartami Shōguna i Bruce'a Lee. Azja jest w grze (2026-11-03: dane, silnik, serwer, interfejs, testy); Afryka i Ameryka Południowa i Środkowa czekają na wdrożenie.**
+Status: **lista zaakceptowana przez Właściciela. Grafiki Azji, Afryki i Ameryki Południowej i Środkowej: po 44/44 gotowe. Na polecenie Właściciela karty Netanjahu i Gandhiego zastąpiono kartami Shōguna i Bruce'a Lee. Wszystkie trzy frakcje są w grze (2026-11-03: dane, serwer, interfejs, tłumaczenia, testy).**
 
 ## Założenia
 

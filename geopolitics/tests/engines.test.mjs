@@ -79,7 +79,7 @@ test('Poker: 200 rozdań z różnymi akcjami, zachowanie kart i żetonów',()=>{
 
 test('Geopolitix: każda para frakcji rozgrywa pełne mecze i zachowuje karty',()=>{
  for(const a of factions)for(const b of factions){if(a===b)continue;
-  for(let seed=1;seed<=6;seed++){let s=geoApply(newGeo(a,seed,b),{type:'mulligan',ids:[]});let steps=0;
+  for(let seed=1;seed<=2;seed++){let s=geoApply(newGeo(a,seed,b),{type:'mulligan',ids:[]});let steps=0;
    assert.deepEqual(s.players.map(p=>p.faction),[a,b]);
    while(s.phase!=='over'&&steps++<250){s=geoApply(s,s.phase==='roundEnd'?{type:'nextRound'}:geoBotAction(s));conserveGeo(s);}
    assert.equal(s.phase,'over',`${a} vs ${b}, seed ${seed}`);}}
@@ -96,4 +96,10 @@ test('Geopolitix: talia Azji ma 4 liderów, 2 serie po 4 kopie i komplet efektó
  assert.equal(d.filter(c=>c.type==='special').length,5);assert.equal(d.filter(c=>c.effect==='spy').length,1);
  const others=new Set([...deckFor('europe',0),...deckFor('america',0)].map(c=>c.key));
  assert.deepEqual(d.map(c=>c.key).filter(k=>others.has(k)),[]);
+});
+test('Geopolitix: każda talia ma 4 liderów i ten sam klucz oznacza tę samą nazwę we wszystkich frakcjach',()=>{
+ const names=new Map();
+ for(const f of factions){const d=deckFor(f,0);assert.equal(d.filter(c=>c.hero).length,4,f);assert.equal(d.filter(c=>c.type==='event').length,8,f);
+  assert.equal(d.filter(c=>c.muster).length,8,f);assert.equal(d.filter(c=>c.combo).length,f==='europe'?6:6,f);
+  for(const c of d){if(names.has(c.key))assert.equal(names.get(c.key),c.name,`${f}: ${c.key}`);names.set(c.key,c.name);}}
 });

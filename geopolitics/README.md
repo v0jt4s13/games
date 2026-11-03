@@ -68,7 +68,7 @@ Zakryte karty oraz stan generatora są w sekcji diagnostycznej, domyślnie wył�
 
 Przycisk **Rewersy** w nagłówku otwiera osobne ustawienia Remika i Pokera: publiczny URL HTTP/HTTPS, cały obrazek (contain) lub wypełnienie z przycięciem (cover), podgląd i powrót do logo Londynek. Pole puste lub niedostępny obrazek daje rewers zastępczy. Ustawienia przechowywane są oddzielnie od partii w localStorage pod przy-stole-card-backs-v1; zmiana nie restartuje gry. Logo jest na wszystkich zakrytych kartach obu gier, w tym stosie dobierania Remika.
 
-Lista nazw do przygotowania ilustracji Geopolitix: [GEOPOLITIX-CARDS.md](docs/GEOPOLITIX-CARDS.md) i [CSV](docs/geopolitix-cards.csv). 132 pozycje ilustracji, 150 fizycznych kart (Europe, North America, Asia). Pliki zawierają nazwy dokładnie z aktualnego katalogu i proponowane nazwy plików.
+Lista nazw do przygotowania ilustracji Geopolitix: [GEOPOLITIX-CARDS.md](docs/GEOPOLITIX-CARDS.md) i [CSV](docs/geopolitix-cards.csv). 220 pozycji ilustracji, 250 fizycznych kart (Europe, North America, Asia, Africa, South America). Pliki zawierają nazwy dokładnie z aktualnego katalogu i proponowane nazwy plików.
 
 ## Ilustracje kart Geopolitix
 

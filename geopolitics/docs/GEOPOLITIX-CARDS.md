@@ -1,6 +1,6 @@
 # Geopolitix - lista kart do przygotowania ilustracji
 
-Lista odczytana z src/data/geopolitix.mjs. Trzy dostępne frakcje: 150 fizycznych kart, 132 odrębne pozycje do ilustracji (44 na frakcję). Serie ×4 mogą korzystać z jednej ilustracji. Afryka i Ameryka Południowa mają zatwierdzone propozycje (GEOPOLITIX-NEW-FACTIONS-PROPOSAL.md), ale jeszcze nie są w grze.
+Lista odczytana z src/data/geopolitix.mjs. Pięć dostępnych frakcji: 250 fizycznych kart, 220 odrębnych pozycji do ilustracji (44 na frakcję). Serie ×4 mogą korzystać z jednej ilustracji.
 
 Proponowane pliki: WebP, pion 2:3, np. 1024 × 1536 px. Sama ilustracja, bez nazwy, siły i opisu - tekst dodaje interfejs. Ilustracje są automatycznie wczytywane z public/cards/<frakcja>/<klucz>.<rozszerzenie>. Oprócz WebP z tabeli obsługiwane są AVIF, PNG, JPG i JPEG. Wystarczy zachować nazwę bazową (np. europe/tusk.png). Przy kilku formatach pierwszeństwo: WebP, AVIF, PNG, JPG, JPEG. Brak lub błąd obrazka zachowuje dotychczasowy wygląd karty. Na serwerze developerskim po dodaniu plików odśwież stronę; wersje dist i standalone wymagają ponownego npm run build.
 
@@ -150,3 +150,101 @@ Proponowane pliki: WebP, pion 2:3, np. 1024 × 1536 px. Sama ilustracja, bez naz
 | Porozumienie korytarzowe | 1 | asia/corridor_accord.webp |
 | Fundusz rezerwowy | 1 | asia/reserve_fund.webp |
 | Ochrona konwoju | 1 | asia/convoy_guard.webp |
+
+## Africa
+
+| Nazwa | Kopie | Proponowany plik |
+|---|---:|---|
+| Cyril Ramaphosa | 1 | africa/ramaphosa.webp |
+| William Ruto | 1 | africa/ruto.webp |
+| Bola Tinubu | 1 | africa/tinubu.webp |
+| Duma Boko | 1 | africa/boko.webp |
+| Netumbo Nandi-Ndaitwah | 1 | africa/netumbo.webp |
+| Abdel Fattah el-Sisi | 1 | africa/elsisi.webp |
+| John Mahama | 1 | africa/mahama.webp |
+| Abdelmadjid Tebboune | 1 | africa/tebboune.webp |
+| Paul Kagame | 1 | africa/kagame.webp |
+| Samia Suluhu Hassan | 1 | africa/samia.webp |
+| Nelson Mandela | 1 | africa/mandela.webp |
+| Kwame Nkrumah | 1 | africa/nkrumah.webp |
+| Thomas Sankara | 1 | africa/sankara.webp |
+| Hajle Syllasje | 1 | africa/haile_selassie.webp |
+| Gamal Abdel Naser | 1 | africa/nasser.webp |
+| Mansa Musa | 1 | africa/mansa_musa.webp |
+| Sieć płatności mobilnych | 1 | africa/mobile_payments.webp |
+| Konsorcjum energii słonecznej | 1 | africa/solar_consor.webp |
+| Hub telekomunikacyjny | 1 | africa/telecom_hub.webp |
+| Centrum przetwarzania | 1 | africa/data_center.webp |
+| Laboratorium szczepionek | 1 | africa/vaccine_lab.webp |
+| AfCFTA - system celny | 1 | africa/afcfta_system.webp |
+| Kolejarz transkontynentalny | 1 | africa/rail_engineer.webp |
+| Mediator Unii Afrykańskiej | 1 | africa/au_mediator.webp |
+| Ratownik medyczny | 1 | africa/medic.webp |
+| Strażnik rezerwatu | 1 | africa/ranger.webp |
+| Anansi | 1 | africa/anansi.webp |
+| Mami Wata | 1 | africa/mami_wata.webp |
+| Straż graniczna AfCFTA | 4 | africa/afcfta_guards.webp |
+| Konwój solarny | 4 | africa/solar_convoy.webp |
+| Awaria sieci energetycznej | 1 | africa/power_outage.webp |
+| Sabotaż łączy telekomunikacyjnych | 1 | africa/telecom_sabotage.webp |
+| Skok cen żywności | 1 | africa/food_price_shock.webp |
+| Susza w Sahelu | 1 | africa/sahel_drought.webp |
+| Zablokowane media | 1 | africa/media_blackout.webp |
+| Strajk transportowy | 1 | africa/transport_strike.webp |
+| Sankcje surowcowe | 1 | africa/resource_sanctions.webp |
+| Powódź w delcie | 1 | africa/delta_flood.webp |
+| Anansi - zmyłka | 1 | africa/anansi_decoy.webp |
+| Kurier kontynentalny | 1 | africa/continental_courier.webp |
+| Zielony Pas | 1 | africa/green_belt.webp |
+| Porozumienie kontynentalne | 1 | africa/continental_accord.webp |
+| Sieć diaspory | 1 | africa/diaspora_network.webp |
+| Eskorta konwoju | 1 | africa/convoy_escort.webp |
+
+## South America
+
+| Nazwa | Kopie | Proponowany plik |
+|---|---:|---|
+| Luiz Inácio Lula da Silva | 1 | south_america/lula.webp |
+| Javier Milei | 1 | south_america/milei.webp |
+| Nayib Bukele | 1 | south_america/bukele.webp |
+| Laura Fernández Delgado | 1 | south_america/laura_fernandez.webp |
+| Daniel Noboa | 1 | south_america/noboa.webp |
+| Abelardo de la Espriella | 1 | south_america/de_la_espriella.webp |
+| José Raúl Mulino | 1 | south_america/mulino.webp |
+| Bernardo Arévalo | 1 | south_america/arevalo.webp |
+| Nasry Asfura | 1 | south_america/asfura.webp |
+| Rodrigo Paz | 1 | south_america/rodrigo_paz.webp |
+| Simón Bolívar | 1 | south_america/bolivar.webp |
+| José de San Martín | 1 | south_america/san_martin.webp |
+| Eva Perón | 1 | south_america/eva_peron.webp |
+| Salvador Allende | 1 | south_america/allende.webp |
+| Augusto César Sandino | 1 | south_america/sandino.webp |
+| Omar Torrijos | 1 | south_america/torrijos.webp |
+| Sieć natychmiastowych płatności | 1 | south_america/pix_network.webp |
+| Centrum litowe | 1 | south_america/lithium_center.webp |
+| Konsorcjum hydroenergii | 1 | south_america/hydro_consor.webp |
+| Sieć obserwacji Amazonii | 1 | south_america/amazon_monitor.webp |
+| Centrum satelitarne | 1 | south_america/satellite_center.webp |
+| Portowy system celny | 1 | south_america/port_customs.webp |
+| Operator kanału | 1 | south_america/canal_operator.webp |
+| Obserwator wyborczy | 1 | south_america/election_observer.webp |
+| Pilot ratunkowy | 1 | south_america/rescue_pilot.webp |
+| Strażnik Andów | 1 | south_america/andes_guard.webp |
+| El Dorado | 1 | south_america/el_dorado.webp |
+| Chupacabra | 1 | south_america/chupacabra.webp |
+| Brygada ochrony Amazonii | 4 | south_america/amazon_guards.webp |
+| Konwój andyjski | 4 | south_america/andes_convoy.webp |
+| Awaria sieci energetycznej | 1 | south_america/grid_failure.webp |
+| Awaria infrastruktury kanału | 1 | south_america/canal_outage.webp |
+| Kryzys walutowy | 1 | south_america/currency_crisis.webp |
+| Pożary Amazonii | 1 | south_america/amazon_fires.webp |
+| Cenzura kampanii | 1 | south_america/campaign_censorship.webp |
+| Strajk portowy | 1 | south_america/port_strike.webp |
+| Sankcje handlowe | 1 | south_america/trade_sanctions.webp |
+| Trzęsienie ziemi | 1 | south_america/earthquake.webp |
+| Zaginione miasto - zmyłka | 1 | south_america/lost_city_decoy.webp |
+| Broker kanałowy | 1 | south_america/canal_broker.webp |
+| Odbudowa Amazonii | 1 | south_america/amazon_recovery.webp |
+| Korytarz kontynentalny | 1 | south_america/continental_corridor.webp |
+| Rezerwa banku centralnego | 1 | south_america/central_reserve.webp |
+| Ochrona szlaku | 1 | south_america/route_guard.webp |

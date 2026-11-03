@@ -70,7 +70,7 @@ function playOut(game, opts = {}, maxSteps = 4000, names = NAMES) {
 }
 
 test('Geopolitix AI vs AI konczy mecz, widoki nie ujawniaja ukrytych kart', () => {
-  for (const [faction, opponent] of [['europe', 'america'], ['america', 'europe'], ['asia', 'europe'], ['europe', 'asia'], ['asia', 'america']]) {
+  for (const [faction, opponent] of [['europe', 'america'], ['america', 'europe'], ['asia', 'europe'], ['europe', 'asia'], ['asia', 'america'], ['africa', 'asia'], ['south_america', 'africa'], ['europe', 'south_america']]) {
     const s = playOut('geo', {faction, opponent});
     assert.deepEqual(s.players.map(p => p.faction), [faction, opponent]);
     assert.equal(s.phase, 'over');

@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.7.0** (2026-11-03) - frakcja Asia (`factions`, `opts.opponent`). 1.6.2 (2026-11-01) - nazwy wierszy na planszy telefonu, znacznik wiersza po karcie taktycznej (`lastPlay`). 1.6.1 (2026-11-01) - łagodniejszy kontrast sukna w jasnym motywie (tokeny `--felt-*`). 1.6.0 (2026-11-01) - układ telefoniczny Geopolitix (`src/phone.tsx`). 1.5.1 (2026-10-31) - komplet grafik kart Ameryki, uwaga o nazwach plików. 1.5.0 (2026-10-30) - Remik i Poker dla 2-4 graczy (silniki, widoki, stoły, interfejs). 1.4.0 - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.8.0** (2026-11-03) - frakcje Africa i South America (razem 5). 1.7.0 (2026-11-03) - frakcja Asia (`factions`, `opts.opponent`). 1.6.2 (2026-11-01) - nazwy wierszy na planszy telefonu, znacznik wiersza po karcie taktycznej (`lastPlay`). 1.6.1 (2026-11-01) - łagodniejszy kontrast sukna w jasnym motywie (tokeny `--felt-*`). 1.6.0 (2026-11-01) - układ telefoniczny Geopolitix (`src/phone.tsx`). 1.5.1 (2026-10-31) - komplet grafik kart Ameryki, uwaga o nazwach plików. 1.5.0 (2026-10-30) - Remik i Poker dla 2-4 graczy (silniki, widoki, stoły, interfejs). 1.4.0 - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -55,7 +55,7 @@ Utrzymanie PL/EN/CS, słowniki i zasady zgodności komunikatów: `docs/LANGUAGES
 
 - **Manifest grafik kart liczy się z `public/cards` względem roota Vite** (`vite.config.ts`,
   `configResolved`). Wcześniej liczył się względem cwd, więc start z innego katalogu dawał
-  pusty manifest i karty bez obrazków, bez żadnego błędu. Obie talie (`europe`, `america`) mają
+  pusty manifest i karty bez obrazków, bez żadnego błędu. Wszystkie pięć talii (`europe`, `america`, `asia`, `africa`, `south_america`) ma
   komplet grafik (po 44). **Nazwa pliku musi równać się kluczowi karty** (np. `orban.webp`, bez akcentu):
   plik o innej nazwie jest po cichu pomijany, więc po dodaniu grafik sprawdź pokrycie (`collectCardArt` vs `deckFor`).
 - **Geopolitix na telefonie (<= 600 px) ma osobny układ** (`GeoGame.tsx`, gałąź `if(phone)`, elementy w `src/phone.tsx`,

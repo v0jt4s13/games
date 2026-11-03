@@ -2,9 +2,9 @@
 
 Stan na 2026-11-02. Plik nadpisywany przy kolejnym przekazaniu (nie jest historią).
 
-## Frakcja Azja w Geopolitix (2026-11-03)
+## Frakcje Asia, Africa, South America w Geopolitix (2026-11-03)
 
-- Talia `asia` (50 kart, 44 klucze) w `src/data/geopolitix.mjs`; lista `factions` i `defaultOpponent` stamtąd czytają silnik,
+- Talie `asia`, `africa`, `south_america` (po 50 kart, 44 klucze, z `GEOPOLITIX-NEW-FACTIONS-PROPOSAL.md`) w `src/data/geopolitix.mjs`; lista `factions` i `defaultOpponent` stamtąd czytają silnik,
   `runner.mjs`, `scripts/card-art.mjs`, UI i testy. Serwer ma lustro w `server/config.py` (`GEO_FACTIONS`) - przy nowej frakcji zmień oba.
 - `newGeo(faction, rng, opponent)`: brak `opponent` = dotychczasowe europe<->america (asia -> europe). Stoły online mają `opts.faction` i
   `opts.opponent`; stare stoły bez `opponent` działają po staremu. Lokalnie przeciwnik: losowy albo wybrany.
