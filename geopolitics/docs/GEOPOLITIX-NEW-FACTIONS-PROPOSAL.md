@@ -1,12 +1,12 @@
 # Geopolitix - propozycje nowych frakcji
 
-Status: **lista zaakceptowana przez Właściciela. Grafiki Azji: 30/44 gotowe; brakuje portretów `putin`, `erdogan`, `takaichi`, `lee_jae_myung`, `pezeshkian`, `mb_saud`, `netanyahu`, `prabowo`, `genghis_khan`, `gandhi`, `ataturk`, `mao`, `golda_meir`, `akbar`. Wcześniejsze generowanie portretów nazwanych osób zostało odrzucone przez generator (kategoria `public-figure`); wariant dalszego postępowania wymaga decyzji Właściciela.**
+Status: **lista zaakceptowana przez Właściciela. Grafiki Azji, Afryki i Ameryki Południowej i Środkowej: po 44/44 gotowe. Na polecenie Właściciela karty Netanjahu i Gandhiego zastąpiono kartami Shōguna i Bruce'a Lee. Azja jest w grze (2026-11-03: dane, silnik, serwer, interfejs, testy); Afryka i Ameryka Południowa i Środkowa czekają na wdrożenie.**
 
 ## Założenia
 
 - Każda talia ma 50 kart fizycznych i 44 różne ilustracje. Wiersz `kopie=4` oznacza cztery egzemplarze tej samej karty/ilustracji.
 - Azja obejmuje Bliski Wschód, Turcję i Rosję. Afryka obejmuje Afrykę Północną. Ameryka Południowa obejmuje Amerykę Środkową; Meksyk i Karaiby są poza zakresem tej propozycji.
-- Każda talia ma 16 rzeczywistych postaci politycznych/historycznych oraz maksymalnie 2 postacie fikcyjne. Statystyki są parametrami rozgrywki, nie oceną osób ani państw.
+- Każda talia ma 16 postaci politycznych/historycznych oraz maksymalnie 2 postacie fikcyjne. Talia Azji zawiera zatwierdzony archetyp Shōguna. Statystyki są parametrami rozgrywki, nie oceną osób ani państw.
 - Używam istniejących efektów i tagów. Nie proponuję na tym etapie zmian silnika. `elektryczna` oznacza podatność na Blackout; `lider` oznacza odporność lidera opisaną w obecnych zasadach; `muster:<klucz>` przywołuje pozostałe kopie serii z talii; `combo:tech` / `combo:coalition` daje +2 każdej karcie tej grupy, gdy na planszy są co najmniej 3; `horse` / `horseBonus` używa istniejącego bonusu końskiego; `aura` daje +2 sąsiadom. Pozostałe nazwy efektów odpowiadają `src/data/geopolitix.mjs`.
 - Stały profil każdej talii: 16 postaci, 6 jednostek technologicznych/koalicyjnych, 6 jednostek wsparcia, 2 serie po 4 kopie, 8 wydarzeń i 6 kart taktycznych. To 50 egzemplarzy / 44 projekty graficzne.
 - Rzędy: dyplomacja, gospodarka, bezpieczeństwo. Karty wydarzeń można zagrać wyłącznie do wymienionych rzędów. Wszystkie wartości, nazwy i efekty niżej są propozycją.
@@ -17,9 +17,9 @@ Współczesne stanowiska sprawdzono na 2 listopada 2026. W talii mogą pozostać
 
 ### Azja (obejmuje Bliski Wschód, Turcję i Rosję)
 
-**Współcześni:** Xi Jinping, Narendra Modi, Władimir Putin, Recep Tayyip Erdoğan, Sanae Takaichi, Lee Jae-myung, Masoud Pezeshkian, Mohammed bin Salman, Benjamin Netanyahu, Prabowo Subianto.
+**Współcześni:** Xi Jinping, Narendra Modi, Władimir Putin, Recep Tayyip Erdoğan, Sanae Takaichi, Lee Jae-myung, Masoud Pezeshkian, Mohammed bin Salman, Prabowo Subianto.
 
-**Historyczni:** Czyngis-chan, Mahatma Gandhi, Mustafa Kemal Atatürk, Mao Zedong, Golda Meir, Akbar Wielki.
+**Historyczni:** Czyngis-chan, Bruce Lee, Mustafa Kemal Atatürk, Mao Zedong, Golda Meir, Akbar Wielki, Shōgun (archetyp feudalnego władcy Japonii).
 
 ### Afryka (w tym Północna)
 
@@ -51,10 +51,10 @@ Współczesne stanowiska sprawdzono na 2 listopada 2026. W talii mogą pozostać
 | Lee Jae-myung | lee_jae_myung | 1 | 14 | elektryczna, gospodarka | Brak | Współczesny polityk i karta gospodarcza. |
 | Masoud Pezeshkian | pezeshkian | 1 | 13 | elektryczna, dyplomacja | Brak | Reprezentuje Bliski Wschód. |
 | Mohammed bin Salman | mb_saud | 1 | 12 | elektryczna, gospodarka | Brak | Reprezentuje Zatokę Perską i gospodarkę. |
-| Benjamin Netanyahu | netanyahu | 1 | 11 | elektryczna, bezpieczeństwo | Brak | Reprezentuje Izrael; umiarkowana siła. |
+| Shōgun | shogun | 1 | 11 | elektryczna, bezpieczeństwo | Brak | Archetyp feudalnego władcy Japonii; umiarkowana siła karty bezpieczeństwa. |
 | Prabowo Subianto | prabowo | 1 | 10 | elektryczna, bezpieczeństwo | Brak | Reprezentuje Azję Południowo-Wschodnią. |
 | Czyngis-chan | genghis_khan | 1 | 9 | elektryczna, bezpieczeństwo | Brak | Postać historyczna osadzona w rzędzie bezpieczeństwa. |
-| Mahatma Gandhi | gandhi | 1 | 8 | bez elektryczności, dyplomacja | Brak | Historyczna postać dyplomacji; odporność na Blackout. |
+| Bruce Lee | bruce_lee | 1 | 8 | bez elektryczności, bezpieczeństwo | Brak | Historyczny mistrz sztuk walki i aktor; odporność na Blackout. |
 | Mustafa Kemal Atatürk | ataturk | 1 | 7 | elektryczna, dyplomacja | Brak | Historyczny polityk Turcji. |
 | Mao Zedong | mao | 1 | 6 | elektryczna, bezpieczeństwo | Brak | Historyczny przywódca Chin. |
 | Golda Meir | golda_meir | 1 | 5 | elektryczna, dyplomacja | Brak | Historyczna przywódczyni Izraela. |

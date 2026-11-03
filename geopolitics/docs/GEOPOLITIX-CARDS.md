@@ -1,6 +1,6 @@
 # Geopolitix - lista kart do przygotowania ilustracji
 
-Lista odczytana z src/data/geopolitix.mjs. Dwie dostępne frakcje: 100 fizycznych kart, 88 odrębnych pozycji do ilustracji (44 na frakcję). Serie ×4 mogą korzystać z jednej ilustracji. Pozostałe frakcje nie mają jeszcze katalogu kart.
+Lista odczytana z src/data/geopolitix.mjs. Trzy dostępne frakcje: 150 fizycznych kart, 132 odrębne pozycje do ilustracji (44 na frakcję). Serie ×4 mogą korzystać z jednej ilustracji. Afryka i Ameryka Południowa mają zatwierdzone propozycje (GEOPOLITIX-NEW-FACTIONS-PROPOSAL.md), ale jeszcze nie są w grze.
 
 Proponowane pliki: WebP, pion 2:3, np. 1024 × 1536 px. Sama ilustracja, bez nazwy, siły i opisu - tekst dodaje interfejs. Ilustracje są automatycznie wczytywane z public/cards/<frakcja>/<klucz>.<rozszerzenie>. Oprócz WebP z tabeli obsługiwane są AVIF, PNG, JPG i JPEG. Wystarczy zachować nazwę bazową (np. europe/tusk.png). Przy kilku formatach pierwszeństwo: WebP, AVIF, PNG, JPG, JPEG. Brak lub błąd obrazka zachowuje dotychczasowy wygląd karty. Na serwerze developerskim po dodaniu plików odśwież stronę; wersje dist i standalone wymagają ponownego npm run build.
 
@@ -102,3 +102,51 @@ Proponowane pliki: WebP, pion 2:3, np. 1024 × 1536 px. Sama ilustracja, bez naz
 | Wydruk dolarów | 1 | america/qe.webp |
 | Prywatny ochroniarz | 1 | america/bodyguard.webp |
 
+## Asia
+
+| Nazwa | Kopie | Proponowany plik |
+|---|---:|---|
+| Xi Jinping | 1 | asia/xi.webp |
+| Narendra Modi | 1 | asia/modi.webp |
+| Władimir Putin | 1 | asia/putin.webp |
+| Recep Tayyip Erdoğan | 1 | asia/erdogan.webp |
+| Sanae Takaichi | 1 | asia/takaichi.webp |
+| Lee Jae-myung | 1 | asia/lee_jae_myung.webp |
+| Masoud Pezeshkian | 1 | asia/pezeshkian.webp |
+| Mohammed bin Salman | 1 | asia/mb_saud.webp |
+| Shōgun | 1 | asia/shogun.webp |
+| Prabowo Subianto | 1 | asia/prabowo.webp |
+| Czyngis-chan | 1 | asia/genghis_khan.webp |
+| Bruce Lee | 1 | asia/bruce_lee.webp |
+| Mustafa Kemal Atatürk | 1 | asia/ataturk.webp |
+| Mao Zedong | 1 | asia/mao.webp |
+| Golda Meir | 1 | asia/golda_meir.webp |
+| Akbar Wielki | 1 | asia/akbar.webp |
+| Konsorcjum półprzewodników | 1 | asia/chipmakers.webp |
+| Laboratorium robotyki | 1 | asia/robotics_lab.webp |
+| Sieć satelitarna | 1 | asia/satellite_network.webp |
+| Fabryka baterii | 1 | asia/battery_plant.webp |
+| Giełda cyfrowa | 1 | asia/digital_exchange.webp |
+| Terminal danych | 1 | asia/data_terminal.webp |
+| Konwój na Jedwabnym Szlaku | 1 | asia/silk_convoy.webp |
+| Dyplomata ASEAN | 1 | asia/asean_diplomat.webp |
+| Analityk rynku ropy | 1 | asia/oil_analyst.webp |
+| Górski przewodnik | 1 | asia/mountain_guide.webp |
+| Yeti | 1 | asia/yeti.webp |
+| Jadeitowy Smok | 1 | asia/jade_dragon.webp |
+| Patrol graniczny | 4 | asia/border_patrol.webp |
+| Flota handlowa | 4 | asia/trade_fleet.webp |
+| Blackout sieci energetycznej | 1 | asia/grid_blackout.webp |
+| Awaria sieci satelitarnej | 1 | asia/satellite_failure.webp |
+| Kryzys naftowy | 1 | asia/oil_crisis.webp |
+| Kryzys łańcucha dostaw | 1 | asia/supply_crisis.webp |
+| Cenzura cyfrowa | 1 | asia/digital_censorship.webp |
+| Strajk portowy | 1 | asia/port_strike.webp |
+| Sankcje handlowe | 1 | asia/trade_sanctions.webp |
+| Trzęsienie ziemi | 1 | asia/earthquake.webp |
+| Yeti - zmyłka | 1 | asia/yeti_decoy.webp |
+| Kurier wywiadu | 1 | asia/intel_courier.webp |
+| Pomoc po monsunie | 1 | asia/monsoon_relief.webp |
+| Porozumienie korytarzowe | 1 | asia/corridor_accord.webp |
+| Fundusz rezerwowy | 1 | asia/reserve_fund.webp |
+| Ochrona konwoju | 1 | asia/convoy_guard.webp |

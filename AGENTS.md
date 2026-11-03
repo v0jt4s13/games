@@ -1,6 +1,6 @@
 # AGENTS.md - app_games
 
-**Wersja: 1.6.2** (2026-11-01) - nazwy wierszy na planszy telefonu, znacznik wiersza po karcie taktycznej (`lastPlay`). 1.6.1 (2026-11-01) - łagodniejszy kontrast sukna w jasnym motywie (tokeny `--felt-*`). 1.6.0 (2026-11-01) - układ telefoniczny Geopolitix (`src/phone.tsx`). 1.5.1 (2026-10-31) - komplet grafik kart Ameryki, uwaga o nazwach plików. 1.5.0 (2026-10-30) - Remik i Poker dla 2-4 graczy (silniki, widoki, stoły, interfejs). 1.4.0 - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
+**Wersja: 1.7.0** (2026-11-03) - frakcja Asia (`factions`, `opts.opponent`). 1.6.2 (2026-11-01) - nazwy wierszy na planszy telefonu, znacznik wiersza po karcie taktycznej (`lastPlay`). 1.6.1 (2026-11-01) - łagodniejszy kontrast sukna w jasnym motywie (tokeny `--felt-*`). 1.6.0 (2026-11-01) - układ telefoniczny Geopolitix (`src/phone.tsx`). 1.5.1 (2026-10-31) - komplet grafik kart Ameryki, uwaga o nazwach plików. 1.5.0 (2026-10-30) - Remik i Poker dla 2-4 graczy (silniki, widoki, stoły, interfejs). 1.4.0 - stoły online (człowiek/SI, zaproszenia, czat): `server/`, `geopolitics/server/`, `docs/ONLINE.md`, `TODO.md`. 1.3.0 - zależności npm tylko z rejestru; `TASK_STATUS.md`. 1.2.0 - konwencja grafik kart (WebP 512x768, paczki poza drzewem). 1.1.0 - `deploy.sh` i `.env.deploy`. 1.0.0 - pierwsza wersja: zakres, pułapki (build, manifest grafik, prefix),
 uruchomienie lokalne przez `appctl` i wdrożenie przez `projects_manager`.
 
 ## Czym jest ten plik
@@ -102,6 +102,10 @@ Utrzymanie PL/EN/CS, słowniki i zasady zgodności komunikatów: `docs/LANGUAGES
 - **Node w runtime usługi**: systemd ma tylko PATH systemowy. `BUILD_CMD` zapisuje ścieżkę `node` do
   `${APP_DIR}/node-path` (`NODE_PATH_FILE`). Brak Node'a widać w `GET /api/health` (`node: null`).
 - `dist/`, `node_modules/` i `data/` nie są w gicie. Produkcja buduje front sama (`BUILD_CMD`).
+
+- **Frakcje Geopolitix to lista `factions` w `src/data/geopolitix.mjs`; serwer ma jej lustro `GEO_FACTIONS` w `server/config.py`.**
+  Nowa frakcja = talia + wpis w obu listach + nazwy w `src/locales/*.json` + grafiki w `public/cards/<klucz frakcji>/`. Stół online ma
+  `opts.faction` (miejsce 1) i `opts.opponent` (miejsce 2); brak `opponent` daje europe<->america.
 
 ## Uruchomienie lokalne
 

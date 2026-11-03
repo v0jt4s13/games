@@ -3,9 +3,15 @@
 ## Stan Azji
 
 - Propozycja kart została zaakceptowana. Talia ma 50 kart fizycznych i wymaga 44 różnych ilustracji.
-- W `public/cards/asia/` jest 30 plików WebP. Pozostałe 14 to portrety nazwanych postaci: `putin`, `erdogan`, `takaichi`, `lee_jae_myung`, `pezeshkian`, `mb_saud`, `netanyahu`, `prabowo`, `genghis_khan`, `gandhi`, `ataturk`, `mao`, `golda_meir`, `akbar`.
-- Generowanie portretów tych osób zostało wcześniej odrzucone przez generator (kategoria `public-figure`). Nie twórz zamienników bez decyzji Właściciela. Zapytanie o wariant symboliczny pozostało bez odpowiedzi.
-- `xi.webp` i `yeti.webp` zostały przerobione, by pasowały stylistycznie do talii Europy. `modi.webp` jest wśród istniejących 30 grafik, ale pozostaje w pierwotnym stylu.
+- W `public/cards/asia/` jest komplet 44/44 wymaganych plików WebP. Po ponownym wygenerowaniu 12 portretów Właściciel zastąpił brakujące karty Netanjahu i Gandhiego kartami `shogun` i `bruce_lee`; oba nowe portrety zostały wygenerowane i zapisane.
+- `xi.webp` i `yeti.webp` zostały przerobione, by pasowały stylistycznie do talii Europy. `modi.webp` pozostaje w pierwotnym stylu.
+
+## Stan pozostałych frakcji
+
+- `public/cards/africa/` zawiera komplet 44/44 ilustracji Afryki.
+- `public/cards/south_america/` zawiera komplet 44/44 ilustracji Ameryki Południowej i Środkowej.
+- Wszystkie trzy nowe zestawy sprawdzono: po 44 pliki WebP 512x768 px na frakcję.
+- Grafiki i zaakceptowane propozycje kart nie dodają frakcji do danych gry; implementacja kart, tłumaczeń i manifestu nadal wymaga osobnego zadania.
 
 ## Wzorzec i format
 
@@ -17,4 +23,4 @@
 
 ## Następny krok
 
-Poprosić Właściciela o decyzję dotyczącą 14 brakujących portretów Azji. Po decyzji uzupełnić dokumentację i sprawdzić pokrycie kluczy kart przez pliki w folderze frakcji.
+Grafiki Azji, Afryki i Ameryki Południowej i Środkowej są kompletne. Kolejnym etapem jest osobna implementacja zaakceptowanych talii w danych gry, tłumaczeniach i manifeście grafik.

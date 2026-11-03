@@ -37,7 +37,7 @@ przegladarka  --HTTP, polling 1 s-->  nginx (/games/)  -->  gunicorn: wsgi.py
 
 - Gospodarz zajmuje miejsce 1 (przy stole dwuosobowym można zamienić). Każde pozostałe miejsce: **człowiek**
   (zaproszenie), **SI** albo puste. Liczbę miejsc wybiera gospodarz przy tworzeniu stołu (`players`, 2-4 dla
-  Remika i Pokera). W Geopolitix miejsce 1 gra wybraną frakcję, drugie przeciwną (zamiana miejsc zamienia frakcje).
+  Remika i Pokera). W Geopolitix miejsce 1 gra `opts.faction`, drugie `opts.opponent` (europe, america, asia; brak przeciwnika = europe<->america; zamiana miejsc zamienia frakcje).
 - Zaproszenie: link `…/#dolacz/<stol>.<sekret>`; sekret jest w fragmencie adresu (nie trafia do logów nginx),
   w bazie tylko jego skrót SHA-256. **Jednorazowe, ważne 24 godziny**, do 6 aktywnych na stół, gospodarz
   może je odwołać. Dołączenie wymaga kliknięcia na stronie zaproszenia (nie dzieje się przy samym otwarciu linku).
@@ -61,7 +61,7 @@ Zapisy wymagają nagłówka `X-Requested-With: games` (ochrona przed CSRF) i cia
 |---|---|---|
 | `GET /health` | każdy | `{ok, node, games}`; `node: null` = brak Node.js w runtime |
 | `GET /me`, `POST /me` | każdy | tworzy tożsamość (ciasteczko) / zmienia imię |
-| `GET /tables`, `POST /tables` | gracz | moje stoły / nowy stół `{game, faction?, players?}` (`players` 2-4 dla remika i pokera) |
+| `GET /tables`, `POST /tables` | gracz | moje stoły / nowy stół `{game, faction?, opponent?, players?}` (`players` 2-4 dla remika i pokera) |
 | `POST /join` | gracz | `{code}` - zajęcie zaproszonego miejsca |
 | `GET /tables/<id>?v=&c=&ce=` | siedzący | odpytywanie: pełny stan, gdy zmieniła się wersja; inaczej tylko obecność i nowe wiadomości |
 | `POST /tables/<id>/seat` | gospodarz | `{seat, kind: ai\|empty}` albo `{op: swap}` (tylko przed startem) |

@@ -2,6 +2,14 @@
 
 Stan na 2026-11-02. Plik nadpisywany przy kolejnym przekazaniu (nie jest historią).
 
+## Frakcja Azja w Geopolitix (2026-11-03)
+
+- Talia `asia` (50 kart, 44 klucze) w `src/data/geopolitix.mjs`; lista `factions` i `defaultOpponent` stamtąd czytają silnik,
+  `runner.mjs`, `scripts/card-art.mjs`, UI i testy. Serwer ma lustro w `server/config.py` (`GEO_FACTIONS`) - przy nowej frakcji zmień oba.
+- `newGeo(faction, rng, opponent)`: brak `opponent` = dotychczasowe europe<->america (asia -> europe). Stoły online mają `opts.faction` i
+  `opts.opponent`; stare stoły bez `opponent` działają po staremu. Lokalnie przeciwnik: losowy albo wybrany.
+- Nie oglądane w przeglądarce ani na telefonie. Balans: symulacja bot-vs-bot, wynik w rozmowie, nie w repo.
+
 ## Cel
 
 Gry karciane (`geopolitics/`: Geopolitix, Remik, Poker) pod `https://ops02.jdblayer.com/games/`
