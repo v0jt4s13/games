@@ -1,10 +1,10 @@
 import {readdirSync} from 'node:fs';
 import {join,extname} from 'node:path';
-import {deckFor} from '../src/data/geopolitix.mjs';
+import {deckFor,factions} from '../src/data/geopolitix.mjs';
 export const artworkExtensions=['.webp','.avif','.png','.jpg','.jpeg'];
 export function collectCardArt(root='public/cards') {
  const result={};
- for(const faction of ['europe','america']) {
+ for(const faction of factions) {
   let files;try{files=readdirSync(join(root,faction),{withFileTypes:true}).filter(f=>f.isFile()).map(f=>f.name);}catch(e){if(e.code==='ENOENT')continue;throw e;}
   const known=new Set(deckFor(faction,0).map(c=>c.key));
   files.sort((a,b)=>artworkExtensions.indexOf(extname(a).toLowerCase())-artworkExtensions.indexOf(extname(b).toLowerCase())||a.localeCompare(b));

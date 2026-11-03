@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {deckFor,rows} from '../src/data/geopolitix.mjs';
+import {deckFor,rows,factions,defaultOpponent} from '../src/data/geopolitix.mjs';
 import {newGeo,geoApply,geoActions,geoBotAction,geoTotals,geoPower} from '../src/engines/geopolitix.mjs';
 import {newRummy,rummyApply,rummyBotAction,isMeld,bestMelds} from '../src/engines/rummy.mjs';
 import {newPoker,pokerApply,pokerBotAction,pokerOptions,bestPokerHand,distributePots,compareRanks} from '../src/engines/poker.mjs';
@@ -8,7 +8,7 @@ const card=(rank,suit='S',copy=0)=>({id:`${copy}-${suit}-${rank}`,rank,suit});
 const geoCards=s=>s.players.flatMap(p=>[...p.hand,...p.deck,...p.grave,...rows.flatMap(r=>p.board[r])]);
 function conserveGeo(s){const cards=geoCards(s);assert.equal(cards.length,100);assert.equal(new Set(cards.map(c=>c.id)).size,100);}
 test('Frakcje mają dokładnie 50 kart, unikalne instancje i opisy efektów',()=>{
- for(const f of ['europe','america']){const d=deckFor(f,0);assert.equal(d.length,50);assert.equal(new Set(d.map(c=>c.id)).size,50);assert.ok(d.every(c=>c.name&&c.desc));}
+ for(const f of factions){const d=deckFor(f,0);assert.equal(d.length,50);assert.equal(new Set(d.map(c=>c.id)).size,50);assert.equal(new Set(d.map(c=>c.key)).size,44);assert.ok(d.every(c=>c.name&&c.desc));}
 });
 test('Mulligan nie losuje odrzuconych kart ponownie i nie zmienia liczby kart',()=>{
  const s=newGeo('europe',12),ids=s.players[0].hand.slice(0,3).map(c=>c.id),n=geoApply(s,{type:'mulligan',ids});
@@ -75,4 +75,25 @@ test('Poker: 200 rozdań z różnymi akcjami, zachowanie kart i żetonów',()=>{
  for(let hand=0;hand<10&&s.phase!=='over';hand++) {let steps=0;
  while(s.phase==='play'&&steps++<100){const o=pokerOptions(s),a=seed%3===0&&o.canRaise?{type:'raise',amount:o.maxRaise}:seed%3===1?{type:o.canCheck?'check':'call'}:pokerBotAction(s);s=pokerApply(s,a);const cards=[...s.deck,...s.burn,...s.board,...s.players.flatMap(p=>p.cards)];assert.equal(cards.length,52);assert.equal(new Set(cards.map(c=>c.id)).size,52);const money=s.players.reduce((n,p)=>n+p.stack+(s.phase==='play'?p.contributed:0),0);assert.equal(money,2000);}
  assert.equal(s.phase,'handEnd');s=pokerApply(s,{type:'nextHand'});}}
+});
+
+test('Geopolitix: każda para frakcji rozgrywa pełne mecze i zachowuje karty',()=>{
+ for(const a of factions)for(const b of factions){if(a===b)continue;
+  for(let seed=1;seed<=6;seed++){let s=geoApply(newGeo(a,seed,b),{type:'mulligan',ids:[]});let steps=0;
+   assert.deepEqual(s.players.map(p=>p.faction),[a,b]);
+   while(s.phase!=='over'&&steps++<250){s=geoApply(s,s.phase==='roundEnd'?{type:'nextRound'}:geoBotAction(s));conserveGeo(s);}
+   assert.equal(s.phase,'over',`${a} vs ${b}, seed ${seed}`);}}
+});
+test('Geopolitix: bez przeciwnika obowiązuje dotychczasowe parowanie',()=>{
+ assert.deepEqual(newGeo('europe',1).players.map(p=>p.faction),['europe','america']);
+ assert.deepEqual(newGeo('america',1).players.map(p=>p.faction),['america','europe']);
+ assert.equal(defaultOpponent('asia'),'europe');
+});
+test('Geopolitix: talia Azji ma 4 liderów, 2 serie po 4 kopie i komplet efektów',()=>{
+ const d=deckFor('asia',0);assert.equal(d.filter(c=>c.hero).length,4);
+ for(const k of ['border_patrol','trade_fleet'])assert.equal(d.filter(c=>c.muster===k).length,4);
+ assert.equal(d.filter(c=>c.combo==='tech').length,6);assert.equal(d.filter(c=>c.type==='event').length,8);
+ assert.equal(d.filter(c=>c.type==='special').length,5);assert.equal(d.filter(c=>c.effect==='spy').length,1);
+ const others=new Set([...deckFor('europe',0),...deckFor('america',0)].map(c=>c.key));
+ assert.deepEqual(d.map(c=>c.key).filter(k=>others.has(k)),[]);
 });

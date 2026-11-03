@@ -8,6 +8,7 @@
 // Errors are returned as {error} with exit code 0, so the server can show them to the player.
 import {setActorNames} from '../src/engines/common.mjs';
 import {newGeo, geoApply, geoBotAction} from '../src/engines/geopolitix.mjs';
+import {factions, defaultOpponent} from '../src/data/geopolitix.mjs';
 import {newRummy, rummyApply, rummyBotAction} from '../src/engines/rummy.mjs';
 import {newPoker, pokerApply, pokerBotAction} from '../src/engines/poker.mjs';
 import {viewFor, viewsFor} from './views.mjs';
@@ -51,7 +52,11 @@ function handle(req) {
   switch (req.op) {
     case 'new': {
       const opts = req.opts || {};
-      if (req.game === 'geo') return {state: newGeo(opts.faction === 'america' ? 'america' : 'europe')};
+      if (req.game === 'geo') {
+        const faction = factions.includes(opts.faction) ? opts.faction : 'europe';
+        const opponent = factions.includes(opts.opponent) && opts.opponent !== faction ? opts.opponent : defaultOpponent(faction);
+        return {state: newGeo(faction, undefined, opponent)};
+      }
       if (req.game === 'rummy') return {state: newRummy(undefined, opts.players || 2)};
       if (req.game === 'poker') return {state: newPoker(undefined, opts.players || 2)};
       return fail('Nieznana gra.');

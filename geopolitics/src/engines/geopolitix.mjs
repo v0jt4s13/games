@@ -1,10 +1,10 @@
 import {shuffle, random, seed, note, actorName, namesSet, assert} from './common.mjs';
-import {deckFor, rows} from '../data/geopolitix.mjs';
+import {deckFor, defaultOpponent, rows} from '../data/geopolitix.mjs';
 const emptyRows = () => Object.fromEntries(rows.map(r=>[r,[]]));
 const immune = c => c.hero || c.immune || c.protected;
-export function newGeo(faction='europe', rng=seed()) {
+export function newGeo(faction='europe', rng=seed(), opponent=defaultOpponent(faction)) {
  const s={game:'geo',version:1,rng,phase:'mulligan',turn:0,round:1,wins:[0,0],history:[],log:[],players:[]};
- s.players=[faction,faction==='europe'?'america':'europe'].map((f,i)=>{
+ s.players=[faction,opponent].map((f,i)=>{
   const deck=shuffle(deckFor(f,i),s);return {faction:f,hand:deck.splice(0,21),deck,grave:[],board:emptyRows(),events:emptyRows(),passed:false};
  });return s;
 }

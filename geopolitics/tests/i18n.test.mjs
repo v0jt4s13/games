@@ -5,7 +5,7 @@ import {createRequire} from 'node:module';
 import {runInNewContext} from 'node:vm';
 import {readFile} from 'node:fs/promises';
 import {catalogs, chooseLocale, translate, translateSystemText} from '../src/i18n-core.mjs';
-import {deckFor} from '../src/data/geopolitix.mjs';
+import {deckFor, factions} from '../src/data/geopolitix.mjs';
 
 test('PL/EN/CS: complete dictionaries and unchanged parameter contracts', () => {
   const placeholders = text => [...text.matchAll(/\{\d+\}/g)].map(m => m[0]).sort();
@@ -16,7 +16,7 @@ test('PL/EN/CS: complete dictionaries and unchanged parameter contracts', () => 
       assert.deepEqual(placeholders(catalogs[locale][key]), placeholders(catalogs.pl[key]), `${locale}: ${key}`);
     }
   }
-  for (const faction of ['europe', 'america']) for (const card of deckFor(faction, 0)) {
+  for (const faction of factions) for (const card of deckFor(faction, 0)) {
     const description = card.desc.replace(/ Odporność na Blackout\.$/, '');
     assert.ok(Object.hasOwn(catalogs.en, description), description);
     assert.ok(Object.hasOwn(catalogs.cs, description), description);

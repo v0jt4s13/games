@@ -1,6 +1,9 @@
 export const rows = ['diplomacy', 'economy', 'defense'];
 export const rowLabels = {diplomacy:'Dyplomacja', economy:'Gospodarka', defense:'Bezpieczeństwo'};
-export const factionLabels = {europe:'Europe', america:'North America'};
+export const factions = ['europe', 'america', 'asia'];
+export const factionLabels = {europe:'Europe', america:'North America', asia:'Asia'};
+// Przeciwnik, gdy nie wybrano go jawnie (zgodność wsteczna: europe <-> america).
+export const defaultOpponent = f => f==='europe'?'america':'europe';
 const unit = (key, name, power, row, more={}) => ({key,name,power,row,type:'unit',electric:true,...more});
 const hero = (key,name,power,row,electric=true) => unit(key,name,power,row,{hero:true,electric});
 const event = (key,name,effect,row,desc) => ({key,name,effect,row,type:'event',power:0,desc});
@@ -40,6 +43,17 @@ const na = [
  event('tornado','Trąba powietrzna','tornado',['economy','defense']),event('crash','Kryzys na Wall Street','half',['economy']),event('katrina','Huragan Katrina','half',['economy']),event('protest','Protesty i strajki','strike',['diplomacy']),event('drought','Susza w Kalifornii','half',['economy']),event('leak','Wyciek danych','silence',['diplomacy']),event('embargo','Embargo handlowe','sanction',['economy']),event('capitol','Szturm na Kapitol','half',['diplomacy']),
  special('leprechaun','Leprechaun','decoy'),unit('broker','Shadow Broker',8,'defense',{effect:'spy'}),special('whistleblower','Whistleblower','clear'),unit('bigfoot','Bigfoot',10,'defense',{immune:true,electric:false}),special('qe','Wydruk dolarów','draw'),special('bodyguard','Prywatny ochroniarz','protect')
 ];
+const asia = [
+ hero('xi','Xi Jinping',20,'diplomacy'),hero('modi','Narendra Modi',18,'economy'),hero('putin','Władimir Putin',16,'defense',false),hero('erdogan','Recep Tayyip Erdoğan',14,'diplomacy',false),
+ ...[['takaichi','Sanae Takaichi',15,'diplomacy'],['lee_jae_myung','Lee Jae-myung',14,'economy'],['pezeshkian','Masoud Pezeshkian',13,'diplomacy'],['mb_saud','Mohammed bin Salman',12,'economy'],['shogun','Shōgun',11,'defense'],['prabowo','Prabowo Subianto',10,'defense'],['genghis_khan','Czyngis-chan',9,'defense'],['bruce_lee','Bruce Lee',8,'defense',false],['ataturk','Mustafa Kemal Atatürk',7,'diplomacy'],['mao','Mao Zedong',6,'defense'],['golda_meir','Golda Meir',5,'diplomacy'],['akbar','Akbar Wielki',4,'economy',false]].map(([k,n,p,r,e=true])=>unit(k,n,p,r,{electric:e})),
+ ...[['chipmakers','Konsorcjum półprzewodników',8,'economy'],['robotics_lab','Laboratorium robotyki',7,'economy'],['satellite_network','Sieć satelitarna',6,'defense'],['battery_plant','Fabryka baterii',5,'economy'],['digital_exchange','Giełda cyfrowa',5,'economy'],['data_terminal','Terminal danych',4,'diplomacy']].map(a=>unit(...a,{combo:'tech'})),
+ ...[['silk_convoy','Konwój na Jedwabnym Szlaku',9,'economy',false],['asean_diplomat','Dyplomata ASEAN',7,'diplomacy',true],['oil_analyst','Analityk rynku ropy',8,'economy',true],['mountain_guide','Górski przewodnik',5,'defense',false]].map(([k,n,p,r,e])=>unit(k,n,p,r,{electric:e})),
+ unit('yeti','Yeti',6,'defense',{immune:true,electric:false}),unit('jade_dragon','Jadeitowy Smok',7,'diplomacy',{aura:true,electric:false}),
+ ...series('border_patrol','Patrol graniczny',4),...series('trade_fleet','Flota handlowa',5),
+ event('grid_blackout','Blackout sieci energetycznej','blackout',['economy','defense']),event('satellite_failure','Awaria sieci satelitarnej','blackout',['defense']),event('oil_crisis','Kryzys naftowy','half',['economy']),event('supply_crisis','Kryzys łańcucha dostaw','half',['economy']),event('digital_censorship','Cenzura cyfrowa','silence',['diplomacy']),event('port_strike','Strajk portowy','strike',['economy']),event('trade_sanctions','Sankcje handlowe','sanction',['economy']),event('earthquake','Trzęsienie ziemi','tornado',['defense']),
+ special('yeti_decoy','Yeti - zmyłka','decoy','Wybierz własną kartę na planszy (oprócz lidera), aby wróciła do ręki. Yeti trafia na cmentarz.'),unit('intel_courier','Kurier wywiadu',8,'defense',{effect:'spy'}),special('monsoon_relief','Pomoc po monsunie','clear'),special('corridor_accord','Porozumienie korytarzowe','move'),special('reserve_fund','Fundusz rezerwowy','draw'),special('convoy_guard','Ochrona konwoju','protect')
+];
+const decks = {europe:eu, america:na, asia};
 export function deckFor(faction, owner) {
- return (faction==='europe'?eu:na).map((c,i)=>({...c,id:`${owner}-${faction}-${i}`,owner,faction,nameKey:`cards.${c.key}.name`,desc:c.desc || descriptions[c.effect] || (c.hero?'Lider: odporny na osłabienie, zniszczenie i przenoszenie.':c.muster?'Muster: przywołuje pozostałe karty tej serii z talii, nie z ręki.':c.combo?'Przy co najmniej 3 kartach tej grupy: każda otrzymuje +2 siły.':c.aura?'Sąsiednie karty w tym rzędzie otrzymują +2 siły.':'Zagraj do przypisanego rzędu.')+(c.electric===false?' Odporność na Blackout.':'')}));
+ return (decks[faction]||eu).map((c,i)=>({...c,id:`${owner}-${faction}-${i}`,owner,faction,nameKey:`cards.${c.key}.name`,desc:c.desc || descriptions[c.effect] || (c.hero?'Lider: odporny na osłabienie, zniszczenie i przenoszenie.':c.muster?'Muster: przywołuje pozostałe karty tej serii z talii, nie z ręki.':c.combo?'Przy co najmniej 3 kartach tej grupy: każda otrzymuje +2 siły.':c.aura?'Sąsiednie karty w tym rzędzie otrzymują +2 siły.':'Zagraj do przypisanego rzędu.')+(c.electric===false?' Odporność na Blackout.':'')}));
 }
