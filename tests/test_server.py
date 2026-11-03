@@ -166,6 +166,21 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(lobby["seat"], 1)
         self.assertEqual(lobby["opts"]["faction"], "europe")                             # still the same faction for the host
 
+    def test_geopolitix_asia_and_opponent_options(self):
+        a = Browser().login("Ala")
+        tid = new_table(a, game="geo", seat_kind="ai", faction="asia", opponent="america")
+        opts = sync(a, tid)["opts"]
+        self.assertEqual((opts["faction"], opts["opponent"]), ("asia", "america"))
+        a.post(f"/api/tables/{tid}/seat", {"op": "swap"})
+        opts = sync(a, tid)["opts"]
+        self.assertEqual((opts["faction"], opts["opponent"]), ("america", "asia"))
+        # nieznana frakcja i przeciwnik równy własnej frakcji wracają do wartości domyślnych
+        tid = new_table(a, game="geo", seat_kind="ai", faction="atlantis", opponent="atlantis")
+        opts = sync(a, tid)["opts"]
+        self.assertEqual((opts["faction"], opts["opponent"]), ("europe", "america"))
+        tid = new_table(a, game="geo", seat_kind="ai", faction="asia", opponent="asia")
+        self.assertEqual(sync(a, tid)["opts"]["opponent"], "europe")
+
     # --- play: two humans -------------------------------------------------------------------
     def two_humans(self, game="poker"):
         a, b = Browser().login("Ala"), Browser().login("Bartek")

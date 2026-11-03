@@ -118,7 +118,15 @@ def _check_seat(seats, index):
         raise ApiError(400, "Nieprawidłowe miejsce.")
 
 
-def create_table(conn, player, game, faction, players=2):
+def geo_opts(faction, opponent=None):
+    """Frakcje stołu Geopolitix: miejsce 0 gra `faction`, miejsce 1 `opponent` (domyślnie europe <-> america)."""
+    faction = faction if faction in config.GEO_FACTIONS else "europe"
+    if opponent not in config.GEO_FACTIONS or opponent == faction:
+        opponent = "america" if faction == "europe" else "europe"
+    return {"faction": faction, "opponent": opponent}
+
+
+def create_table(conn, player, game, faction, players=2, opponent=None):
     if game not in config.GAMES:
         raise ApiError(400, "Nieznana gra.")
     low, high = config.GAME_SEATS[game]
@@ -129,7 +137,7 @@ def create_table(conn, player, game, faction, players=2):
     mine = conn.execute("SELECT COUNT(*) FROM tables WHERE host=?", (player["id"],)).fetchone()[0]
     if mine >= config.MAX_TABLES_PER_PLAYER:
         raise ApiError(429, "Masz zbyt wiele stołów. Zamknij nieużywane.")
-    opts = {"faction": "america" if faction == "america" else "europe"} if game == "geo" else {"players": players}
+    opts = geo_opts(faction, opponent) if game == "geo" else {"players": players}
     seats = [{"kind": "human", "pid": player["id"], "name": player["name"]}] + \
             [{"kind": "empty", "pid": None, "name": None} for _ in range(players - 1)]
     table_id = secrets.token_urlsafe(6)
@@ -164,7 +172,8 @@ def swap_seats(conn, table, player):
     seats = seats[::-1]
     opts = json.loads(table["opts"])
     if table["game"] == "geo":     # seat 0 plays the chosen faction; keep each player's faction when seats swap
-        opts["faction"] = "america" if opts.get("faction") != "america" else "europe"
+        cur = geo_opts(opts.get("faction"), opts.get("opponent"))
+        opts = {**opts, "faction": cur["opponent"], "opponent": cur["faction"]}
     conn.execute("UPDATE invites SET seat=1-seat WHERE table_id=?", (table["id"],))
     _save_seats(conn, table, seats, opts=dumps(opts))
 

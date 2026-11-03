@@ -62,7 +62,7 @@ def tables_list(ctx):
 def tables_create(ctx):
     if random.random() < 0.05:
         logic.cleanup(ctx.conn)
-    table = logic.create_table(ctx.conn, ctx.player, ctx.body.get("game"), ctx.body.get("faction"), ctx.body.get("players", 2))
+    table = logic.create_table(ctx.conn, ctx.player, ctx.body.get("game"), ctx.body.get("faction"), ctx.body.get("players", 2), ctx.body.get("opponent"))
     return {"id": table["id"]}
 
 

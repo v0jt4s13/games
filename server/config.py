@@ -11,6 +11,7 @@ RUNNER = BASE / "geopolitics" / "server" / "runner.mjs"
 PREFIX = "/" + os.environ.get("SCRIPT_NAME", "").strip().strip("/")
 
 GAMES = ("geo", "rummy", "poker")
+GEO_FACTIONS = ("europe", "america", "asia")      # zgodne z factions w geopolitics/src/data/geopolitix.mjs
 GAME_SEATS = {"geo": (2, 2), "rummy": (2, 4), "poker": (2, 4)}      # (min, max) players per table
 AI_NAME = "SI"
 AI_DELAY = float(os.environ.get("GAMES_AI_DELAY", "0.9"))      # seconds between AI moves (so humans can follow)

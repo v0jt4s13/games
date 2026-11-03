@@ -47,7 +47,7 @@ function SeatInvite({t, index, fresh, onInvite, onRevoke}: any) {
 
 function SeatCard({t, index, fresh, cmd, invite, revoke}: any) {
   const seat = t.seats[index], lobby = t.phase === 'lobby';
-  const faction = t.game === 'geo' ? (index === 0 ? t.opts.faction : t.opts.faction === 'america' ? 'europe' : 'america') : null;
+  const faction = t.game === 'geo' ? (index === 0 ? t.opts.faction : t.opts.opponent || (t.opts.faction === 'america' ? 'europe' : 'america')) : null;
   return <article className={`seat-card ${seat.you ? 'you' : ''}`}>
     <header><h3>{tr("Miejsce ")}{index + 1}</h3>{faction && <span className="seat-faction">{factionLabels[faction]}</span>}</header>
     {seat.kind === 'human' && <p className="seat-name"><Dot on={seat.online}/><strong>{seat.name}</strong>
