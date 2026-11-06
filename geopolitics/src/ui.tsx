@@ -27,4 +27,6 @@ export function GameLog({state}:any) {
  return <TraceLog state={state}/>;
 }
 export function Outcome({winner,children,players=2}:any) {const {online}=useOnline(),name=useSeatName();return <section className="outcome" aria-live="polite"><Icon name="shield" size={28}/><div><h2>{winner===0?tr("Wygrywasz!"):winner>0?(online||players>2?tr("Wygrywa {0}.", [name(winner)]):tr("Tym razem komputer.")):tr("Remis.")}</h2>{children}</div></section>;}
+// Miejsce przeciwnika przy stole: 2 osoby naprzeciw, 3 w trójkącie (dwa górne rogi), 4 na boki kwadratu.
+export const seatArea=(i:number,n:number)=>n<=2?'top':n===3?(i===1?'topL':'topR'):(i===1?'left':i===2?'top':'right');
 export function TurnBadge({bot,text,who}:any) {const {online,opponent}=useOnline();return <span className={`turn-badge ${bot?'bot':''}`} role="status"><i/>{text||(bot?tr("{0} myśli…", [who||(online?opponent:tr("Komputer"))]):tr("Twój ruch"))}</span>;}

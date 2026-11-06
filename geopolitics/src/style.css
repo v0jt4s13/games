@@ -196,3 +196,70 @@
 @media(max-width:600px){.site-header{flex-wrap:wrap}.header-actions{flex-wrap:wrap}.language-switch>span{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.language-switch select{max-width:100px;font-size:.75rem}}
 .aetherii-tile .tile-cover{display:block;width:100%;height:150px;object-fit:cover;object-position:center 80%;border-radius:10px;margin-bottom:14px;border:1px solid var(--line)}
 @media(max-width:600px){.aetherii-tile .tile-cover{height:110px}}
+
+/* === Stoły pokera i remika: miejsca wg liczby graczy (2 naprzeciw, 3 trójkąt, 4 kwadrat) === */
+.poker-table,.rummy-table{position:relative;display:grid;gap:10px;justify-items:center;align-items:center;isolation:isolate}
+.poker-table{padding:24px 14px}
+.rummy-table{padding:16px 14px 20px}
+.seats-2{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "mid" "own"}
+.poker-table.seats-2{border-radius:90px}
+.seats-3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"topL topR" "mid mid" "own own";background:transparent;border:0;box-shadow:none;outline:0;border-radius:0;padding:20px 8px 24px}
+.seats-3::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--felt);border:1px solid var(--felt-line);clip-path:polygon(0 0,100% 0,50% 100%)}
+.seats-4{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr);grid-template-areas:". top ." "left mid right" ". own .";border-radius:28px;max-width:760px;width:100%;margin:0 auto}
+.seat-top{grid-area:top}.seat-left{grid-area:left}.seat-right{grid-area:right}.seat-own{grid-area:own}
+.seat-topL{grid-area:topL;justify-self:start}.seat-topR{grid-area:topR;justify-self:end}
+.seat-mid{grid-area:mid;min-width:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.community.seat-mid{display:block}
+.table-turn{font-size:.9rem;font-weight:700;color:var(--felt-gold);text-align:center;min-height:1.3em}
+.table-turn:empty{display:none}
+.poker-table .poker-seat.opponent .playing-card{--card-w:46px}
+.poker-seat.own .playing-card{--card-w:92px}
+.seats-4 .community-cards{flex-wrap:wrap}
+.rummy-table>.player-line{width:100%;max-width:360px;margin:0;padding:10px 12px;border:1px solid var(--felt-edge);border-radius:12px;background:var(--felt-tint)}
+.rummy-table>.player-line.turn-active{border-color:var(--felt-gold);box-shadow:0 0 0 1px var(--felt-gold)}
+.rummy-table .seat-mid .draw-piles{padding:0;gap:24px}
+.rummy-table .meld-board{width:100%;max-height:none}
+.rummy-table .opponent-hand .playing-card{--card-w:34px}
+/* ręka: przewijana, powiększona karta w środku, liczniki ukrytych kart po bokach */
+.hand-wrap{position:relative;min-width:0}
+.rummy-hand{position:relative;padding-top:20px;padding-bottom:14px}
+.rummy-hand>div{transition:transform .15s ease}
+.rummy-hand>div[data-focus="1"]{transform:translateY(-8px) scale(1.12);transform-origin:50% 100%;z-index:1}
+.hand-edge{position:absolute;top:45%;transform:translateY(-50%);z-index:2;padding:4px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:.8rem;font-weight:700;pointer-events:none}
+.hand-edge-l{left:2px}.hand-edge-r{right:2px}
+@media(max-width:600px){
+ .poker-table{min-height:min(72dvh,640px);padding:16px 8px;gap:8px}
+ .rummy-table{min-height:min(52dvh,520px);padding:12px 8px;gap:8px}
+ .seats-3{padding:16px 4px 18px}
+ .seats-4{border-radius:22px}
+ .poker-seat.own .playing-card{--card-w:clamp(62px,21vw,96px)}
+ .poker-table .poker-seat.opponent .playing-card{--card-w:clamp(30px,9vw,40px)}
+ .rummy-table .opponent-hand .playing-card{--card-w:clamp(22px,6.5vw,28px)}
+ .seats-4 .community-cards{gap:4px}
+ .seats-4 .community-cards .playing-card,.seats-4 .community-cards .card-slot{--card-w:clamp(30px,calc((100vw - 236px)/3),46px);width:var(--card-w);height:calc(var(--card-w)*1.43)}
+ .table-turn{font-size:.82rem}
+ .rummy-table .seat-mid .draw-stack .playing-card{--card-w:58px}
+ .rummy-table .meld-board{max-height:28dvh}
+ .rummy-hand{padding-top:22px}
+ .rummy-hand .playing-card{--card-w:clamp(66px,20vw,92px)}
+}
+
+/* miejsca z lewej i z prawej (stół 4 graczy): opis pionowo, karty obok */
+.seats-4 .seat-left,.seats-4 .seat-right{width:auto;max-width:100%;min-width:0;flex-wrap:nowrap;gap:8px}
+.seats-4 .seat-left{justify-self:start}.seats-4 .seat-right{justify-self:end}
+.seats-4 .seat-left .seat-name,.seats-4 .seat-right .seat-name,.seats-4 .seat-left.player-line>div:first-child,.seats-4 .seat-right.player-line>div:first-child{-webkit-writing-mode:vertical-rl;writing-mode:vertical-rl;min-width:0;min-height:90px;flex:0 0 auto;text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:200px;gap:4px}
+.seats-4 .seat-left .seat-name,.seats-4 .seat-left.player-line>div:first-child{transform:rotate(180deg)}
+.seats-4 .poker-seat.seat-left,.seats-4 .poker-seat.seat-right{flex-direction:row;align-items:center}
+.seats-4 .poker-seat.seat-right{flex-direction:row-reverse}
+.seats-4 .poker-seat.seat-left .bet-label,.seats-4 .poker-seat.seat-right .bet-label{flex-basis:auto;-webkit-writing-mode:vertical-rl;writing-mode:vertical-rl;max-height:160px;overflow:hidden}
+.seats-4 .poker-seat.seat-left .hole-cards,.seats-4 .poker-seat.seat-right .hole-cards{flex-direction:column;gap:4px}
+.seats-4 .rummy-table>.player-line.seat-left,.seats-4 .player-line.seat-left,.seats-4 .player-line.seat-right{flex-direction:row;padding:10px 8px;max-width:100%;width:auto}
+.seats-4 .player-line.seat-right{flex-direction:row-reverse}
+.seats-4 .player-line.seat-left .opponent-hand,.seats-4 .player-line.seat-right .opponent-hand{flex-direction:column;padding-left:0;padding-top:0}
+.seats-4 .player-line.seat-left .opponent-hand .playing-card,.seats-4 .player-line.seat-right .opponent-hand .playing-card{margin-left:0;margin-top:-34px}
+.seats-4 .player-line.seat-left .opponent-hand .playing-card:first-child,.seats-4 .player-line.seat-right .opponent-hand .playing-card:first-child{margin-top:0}
+.seats-4 .player-line.seat-left .hand-count,.seats-4 .player-line.seat-right .hand-count{margin:4px 0 0}
+/* karty zawsze przy zewnętrznej krawędzi stołu, opis bliżej środka */
+.seats-4 .poker-seat.seat-left .hole-cards,.seats-4 .poker-seat.seat-right .hole-cards,.seats-4 .player-line.seat-left .opponent-hand,.seats-4 .player-line.seat-right .opponent-hand{order:0}
+.seats-4 .poker-seat.seat-left .seat-name,.seats-4 .poker-seat.seat-right .seat-name,.seats-4 .player-line.seat-left>div:first-child,.seats-4 .player-line.seat-right>div:first-child{order:1}
+.seats-4 .poker-seat.seat-left .bet-label,.seats-4 .poker-seat.seat-right .bet-label{order:2}
