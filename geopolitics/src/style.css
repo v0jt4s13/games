@@ -311,3 +311,13 @@
 .live-menu ul{position:absolute;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;min-width:160px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px #0004}
 .live-menu li>*{display:flex;align-items:center;width:100%;min-height:44px;padding:0 12px;background:transparent;border:0;color:var(--ink);text-decoration:none;text-align:left;border-radius:8px;cursor:pointer}
 .live-menu li>*:hover,.live-menu li>*:focus-visible{background:var(--surface-2)}
+/* stół online w widoku jednoekranowym */
+:root.table-live-online main{padding:6px 8px 8px;max-width:none}
+.online-table.table-live-main{display:flex;flex-direction:column;gap:6px;height:calc(100dvh - 14px);overflow:auto}
+:root.table-live .table-controls,:root.table-live .online-strip,:root.table-live .seat-details{display:none}
+.table-live-main>.notice{padding:6px 10px;font-size:.8rem}
+.chat-panel.floating{position:fixed;top:8px;right:62px;z-index:20;margin:0;border:0;background:none;overflow:visible}
+.chat-panel.floating .chat-toggle{position:relative;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;justify-content:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.chat-panel.floating .chat-badge{position:absolute;top:-6px;right:-6px;padding:0 6px;font-size:.7rem;line-height:1.4}
+.chat-panel.floating .chat-body{position:fixed;top:60px;right:10px;width:min(420px,calc(100vw - 20px));max-height:calc(100dvh - 72px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px #0004;z-index:20}
+.chat-panel.floating .chat-list{max-height:min(40dvh,320px)}

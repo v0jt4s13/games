@@ -9,11 +9,12 @@ const clock = (at: number) => new Date(at * 1000).toLocaleTimeString(getRegion()
 type Pending = {key: number; text: string; status: 'sending' | 'failed' | 'sent'; id?: number; error?: string};
 
 /** Text conversation of a table: history (paged), Enter sends, failed messages can be retried, host controls. */
-export default function Chat({tableId, messages, meta, seats, isHost, onChanged}: any) {
-  const [expanded, setExpanded] = useState(true), [text, setText] = useState(''), [pending, setPending] = useState<Pending[]>([]);
+export default function Chat({tableId, messages, meta, seats, isHost, onChanged, floating = false}: any) {
+  const [expanded, setExpanded] = useState(!floating), [text, setText] = useState(''), [pending, setPending] = useState<Pending[]>([]);
   const [older, setOlder] = useState<any[]>([]), [more, setMore] = useState(true), [error, setError] = useState(''), [confirmClear, setConfirmClear] = useState(false);
   const counter = useRef(0), seen = useRef(0), list = useRef<HTMLOListElement>(null), stick = useRef(true);
 
+  useEffect(() => { setExpanded(!floating); }, [floating]);
   useEffect(() => { setOlder([]); setMore(true); }, [meta.epoch]);               // history cleared by the host
   const all = useMemo(() => {
     const byId = new Map<number, any>();
@@ -51,10 +52,10 @@ export default function Chat({tableId, messages, meta, seats, isHost, onChanged}
   const canWrite = meta.open && !meta.muted;
   const others = seats.map((s: any, i: number) => ({s, i})).filter(({s}: any) => s.kind === 'human' && !s.host);
 
-  return <aside className="chat-panel" aria-label={tr("Komunikacja")}>
-    <button className="chat-toggle" aria-expanded={expanded} onClick={() => setExpanded(v => !v)}>
-      <Icon name="cards"/><span>{tr("Komunikacja")}</span>{unread > 0 && <b className="chat-badge" aria-label={tr("{0} nowych wiadomości", [unread])}>{unread}</b>}
-      {!meta.open && <small>{tr("zamknięta")}</small>}</button>
+  return <aside className={`chat-panel ${floating ? 'floating' : ''}`} aria-label={tr("Komunikacja")}>
+    <button className="chat-toggle" aria-expanded={expanded} aria-label={floating ? tr("Komunikacja") : undefined} onClick={() => setExpanded(v => !v)}>
+      {floating ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg> : <><Icon name="cards"/><span>{tr("Komunikacja")}</span></>}{unread > 0 && <b className="chat-badge" aria-label={tr("{0} nowych wiadomości", [unread])}>{unread}</b>}
+      {!meta.open && !floating && <small>{tr("zamknięta")}</small>}</button>
     {expanded && <div className="chat-body">
       {all.length >= 50 && more && <button className="text-button" onClick={loadOlder}>{tr("Starsze wiadomości")}</button>}
       <ol className="chat-list" ref={list} onScroll={onScroll} aria-live="polite">

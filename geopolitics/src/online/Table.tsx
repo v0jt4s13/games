@@ -45,6 +45,19 @@ function SeatInvite({t, index, fresh, onInvite, onRevoke}: any) {
   </div>;
 }
 
+/** Menu akcji stołu w prawym górnym rogu (widok gry na jednym ekranie); ryzykowne akcje wymagają drugiego kliknięcia. */
+function LiveMenu({t, onRules, leave, close, restart}: any) {
+  const [open, setOpen] = useState(false), [asked, setAsked] = useState('');
+  const item = (key: string, label: string, confirm: string, fn: () => void) => <li role="none"><button role="menuitem" onClick={() => { if (asked === key) { setOpen(false); setAsked(''); fn(); } else setAsked(key); }}>{asked === key ? confirm : label}</button></li>;
+  return <div className="live-menu"><button aria-haspopup="true" aria-expanded={open} aria-label={tr("Menu gry")} onClick={() => { setOpen(o => !o); setAsked(''); }}>⋮</button>
+    {open && <ul role="menu">
+      <li role="none"><button role="menuitem" onClick={() => { setOpen(false); onRules(t.game); }}>{tr("Zasady")}</button></li>
+      {t.host && item('restart', tr("Nowa gra przy tym stole"), tr("Na pewno zacząć od nowa"), restart)}
+      {t.host ? item('close', tr("Zamknij stół"), tr("Na pewno zamknąć"), close) : item('leave', tr("Opuść stół"), tr("Na pewno opuścić"), leave)}
+      <li role="none"><a role="menuitem" href="#online" onClick={() => setOpen(false)}>{tr("Moje stoły")}</a></li>
+    </ul>}</div>;
+}
+
 function SeatCard({t, index, fresh, cmd, invite, revoke}: any) {
   const seat = t.seats[index], lobby = t.phase === 'lobby';
   const faction = t.game === 'geo' ? (index === 0 ? t.opts.faction : t.opts.opponent || (t.opts.faction === 'america' ? 'europe' : 'america')) : null;
@@ -117,6 +130,13 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
   const leave = async () => { if (await cmd('leave')) location.hash = 'online'; };
   const close = async () => { if (await cmd('close')) location.hash = 'online'; };
 
+  // widok gry na jednym ekranie (jak lokalny Remik/Poker): tylko gdy gra trwa i stół jest pełny
+  const live = !!t && t.phase !== 'lobby' && t.game !== 'geo' && t.seats.every((s: any) => s.kind !== 'empty');
+  useEffect(() => {
+    document.documentElement.classList.toggle('table-live', live); document.documentElement.classList.toggle('table-live-online', live);
+    return () => { document.documentElement.classList.remove('table-live', 'table-live-online'); };
+  }, [live]);
+
   if (fatal) return <section className="online-hub"><div className="notice error" role="alert">{systemText(fatal)}</div><a className="back-link" href="#online"><Icon name="back"/>{tr("Moje stoły")}</a></section>;
   if (!t) return <section className="online-hub"><p className="muted" role="status">{tr("Łączenie ze stołem…")}</p>{error && <div className="notice error" role="alert">{systemText(error)}</div>}</section>;
 
@@ -128,7 +148,7 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
   const seatGrid = <div className="seat-grid" aria-label={tr("Miejsca przy stole")}>
     {t.seats.map((_: any, i: number) => <SeatCard key={i} t={t} index={i} fresh={fresh} cmd={cmd} invite={invite} revoke={revoke}/>)}
   </div>;
-  return <section className="online-table">
+  return <section className={`online-table ${live ? 'table-live-main' : ''}`}>
     <div className="game-heading"><div><a href="#online" className="back-link"><Icon name="back"/>{tr("Moje stoły")}</a><h1>{name}{tr(" · stół online")}</h1></div>
       <button onClick={() => onRules(t.game)}><Icon name="help"/><span>{tr("Zasady")}</span></button></div>
     {error && <div className="notice error" role="alert">{systemText(error)}<button onClick={() => setError('')}>{tr("Zamknij komunikat")}</button></div>}
@@ -161,6 +181,7 @@ export default function OnlineTable({id, onRules}: {id: string; onRules: (game: 
       </div></div>
     </OnlineContext.Provider>}
 
-    <Chat tableId={t.id} messages={msgs} meta={t.chat} seats={t.seats} isHost={t.host} onChanged={pollNow}/>
+    {live && <LiveMenu t={t} onRules={onRules} leave={leave} close={close} restart={() => cmd('start')}/>}
+    <Chat tableId={t.id} messages={msgs} meta={t.chat} seats={t.seats} isHost={t.host} onChanged={pollNow} floating={live}/>
   </section>;
 }
