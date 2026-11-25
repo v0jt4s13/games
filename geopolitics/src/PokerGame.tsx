@@ -2,7 +2,7 @@ import {tr, pokerHandName, getRegion} from "./i18n";
 import {trackMove} from './trace.mjs';
 import React,{useEffect,useState} from 'react';
 import {newPoker,pokerApply,pokerOptions,pokerBotAction,bestPokerHand} from './engines/poker.mjs';
-import {PlayingCard,GameLog,TurnBadge,Outcome,Icon,PlayerCount,useOnline,useSeatName,seatArea} from './ui';
+import {PlayingCard,GameLog,Outcome,Icon,PlayerCount,useOnline,useSeatName,seatArea} from './ui';
 export default function PokerGame({state,setState,run,paused}:any) {
  const [raise,setRaise]=useState(40),[count,setCount]=useState(2),{online}=useOnline(),name=useSeatName();
  useEffect(()=>{if(state?.phase==='play'){const o=pokerOptions(state);setRaise(o.minRaise);if(state.turn!==0&&!paused&&!online){const id=setTimeout(()=>run(()=>trackMove(state,pokerBotAction(state),pokerApply)),850);return()=>clearTimeout(id);}}},[state,paused]);
@@ -16,7 +16,7 @@ export default function PokerGame({state,setState,run,paused}:any) {
  const winners:number[]=result?(result.winners??(result.winner>=0?[result.winner]:[])):[];
  const opponent=(p:any,i:number)=><div key={i} className={`poker-seat opponent seat-${seatArea(i,state.players.length)} ${state.turn===i&&state.phase==='play'?'seat-active':''} ${p.folded?'seat-folded':''}`}><div className="seat-name"><strong>{name(i)} {state.dealer===i&&<span className="dealer" title="Dealer">D</span>}</strong><span>{p.stack.toLocaleString(getRegion())}{tr(" żetonów")}</span></div><div className="hole-cards">{p.cards.map((c:any,k:number)=><PlayingCard key={k} card={c} hidden={!shown(p)}/>)}</div><span className="bet-label">{status(p)}</span></div>;
  return <>
- <div className="match-strip"><div><strong>{tr("Rozdanie ")}{state.hand}</strong><span>Texas Hold’em · {state.players.length}{tr(" graczy · blindy 10 / 20")}</span></div><TurnBadge bot={state.turn!==0} who={state.phase==='play'?name(state.turn):undefined} text={state.phase==='play'?undefined:state.phase==='over'?tr("Koniec meczu"):tr("Koniec rozdania")}/></div>
+ <div className="match-strip"><div><strong>{tr("Rozdanie ")}{state.hand}</strong><span>Texas Hold’em · {state.players.length}{tr(" graczy · blindy 10 / 20")}</span></div></div>
  {state.phase==='over'&&<Outcome winner={state.winner} players={state.players.length}><p>{tr("Wszystkie żetony mają jednego właściciela. Zagraj ponownie przez „Nowa gra”.")}</p></Outcome>}
  <div className={`poker-table felt seats-${state.players.length}`}>{state.players.map((p:any,i:number)=>i===0?null:opponent(p,i))}
  <div className="community seat-mid"><div className="table-turn">{state.phase==='play'?(state.turn===0?tr("Twój ruch"):tr("Ruch: {0}", [name(state.turn)])):''}</div><div className="pot"><span>{state.phase==='play'?tr("W puli"):tr("Rozdana pula")}</span><strong>{pot.toLocaleString(getRegion())}</strong><small>{street}</small></div><div className="community-cards">{Array.from({length:5},(_,i)=>state.board[i]?<PlayingCard key={i} card={state.board[i]}/>:<div key={i} className="card-slot" aria-label={tr("Nieodkryta karta wspólna")}><Icon name="cards"/></div>)}</div></div>

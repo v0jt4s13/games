@@ -241,7 +241,7 @@
  .rummy-table .seat-mid .draw-stack .playing-card{--card-w:58px}
  .rummy-table .meld-board{max-height:28dvh}
  .rummy-hand{padding-top:22px}
- .rummy-hand .playing-card{--card-w:clamp(66px,20vw,92px)}
+ .rummy-hand{--hand-w:clamp(66px,20vw,92px)}
 }
 
 /* miejsca z lewej i z prawej (stół 4 graczy): opis pionowo, karty obok */
@@ -263,3 +263,51 @@
 .seats-4 .poker-seat.seat-left .hole-cards,.seats-4 .poker-seat.seat-right .hole-cards,.seats-4 .player-line.seat-left .opponent-hand,.seats-4 .player-line.seat-right .opponent-hand{order:0}
 .seats-4 .poker-seat.seat-left .seat-name,.seats-4 .poker-seat.seat-right .seat-name,.seats-4 .player-line.seat-left>div:first-child,.seats-4 .player-line.seat-right>div:first-child{order:1}
 .seats-4 .poker-seat.seat-left .bet-label,.seats-4 .poker-seat.seat-right .bet-label{order:2}
+
+/* === Remik i Poker: jedna strona bez przewijania (header/stopka/log ukryte w trakcie partii) === */
+.rummy-hand{--hand-w:80px}
+.rummy-hand .playing-card{--card-w:var(--hand-w)}
+.rummy-hand.half>div{margin-right:calc(var(--hand-w)*-.5)}
+.rummy-hand.half>div:last-child{margin-right:0}
+.section-line>label select{margin-left:4px}
+.seat-top{width:75vw!important}
+.rummy-table>.player-line.seat-top,.poker-seat.opponent.seat-top{max-width:100%;flex-wrap:nowrap;justify-content:space-between;padding:3px 10px;gap:8px}
+.rummy-table>.player-line.seat-top>div:first-child{flex:1;min-width:0}
+.rummy-table .seat-top .opponent-hand .playing-card{--card-w:clamp(20px,5.5vw,26px)}
+.poker-table .poker-seat.opponent.seat-top .playing-card{--card-w:clamp(24px,7vw,32px)}
+.poker-seat.opponent.seat-top .bet-label{flex-basis:auto}
+.seats-4{grid-template-areas:"top top top" "left mid right" ". own ."}
+:root.table-live .site-header,:root.table-live .game-heading,:root.table-live .test-controls,:root.table-live .game-footer,:root.table-live .game-log{display:none}
+:root.table-live main.table-live-main{display:flex;flex-direction:column;gap:6px;height:100dvh;padding:6px 8px 8px;max-width:none;overflow:auto}
+.table-live-main>*{flex:0 0 auto;min-width:0;margin-top:0;margin-bottom:0}
+.table-live-main>.match-strip{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0;margin:0}
+.table-live-main>.rummy-table,.table-live-main>.poker-table{flex:1 1 0;min-height:0;overflow:auto;gap:6px;padding-block:8px}
+.table-live-main .rummy-table .meld-board{min-height:0}
+.table-live-main .draw-piles{gap:16px}
+.table-live-main .hand-section{margin:0}
+.table-live-main .section-line{margin-bottom:2px}
+.table-live-main .rummy-hand{--hand-w:clamp(44px,13vw,60px);padding-top:14px;padding-bottom:6px}
+.table-live-main .rummy-actions{padding:8px 12px;gap:10px}
+.table-live-main .rummy-actions>div:first-child{min-width:0}
+.table-live-main .rummy-actions h3{font-size:.9rem;margin:0 0 6px}
+.table-live-main .rummy-actions.collapsed p,.table-live-main .rummy-actions.collapsed h3{display:none}
+.table-live-main .rummy-actions.collapsed{padding:4px 8px;cursor:pointer;max-height:52px;overflow:hidden}
+.table-live-main .rummy-actions.collapsed .action-row>button{padding:6px 8px;font-size:.75rem;min-height:0}
+.table-live-main .rummy-actions.open{cursor:pointer}
+.table-live-main .rummy-table .section-line{display:none}
+.table-live-main .draw-stack>span{gap:0}
+.table-live-main .draw-stack .stack-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.table-live-main .draw-stack>span small{font-size:.8rem;margin:2px 0 0}
+.table-live-main .draw-stack{flex-direction:column;gap:2px;padding:4px}
+.table-live-main .rummy-table .seat-mid .draw-stack .playing-card{--card-w:48px}
+@keyframes stack-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.draw-piles>div:nth-child(2) .draw-stack.can-draw .playing-card,.draw-piles>div:nth-child(2) .draw-stack.can-draw .card-slot{animation-delay:-.55s}
+.draw-stack.can-draw .playing-card,.draw-stack.can-draw .card-slot{animation:stack-pulse 1.1s ease-in-out infinite;box-shadow:0 0 0 2px var(--felt-gold),0 4px 9px #0002}
+@media(prefers-reduced-motion:reduce){.draw-stack.can-draw .playing-card{animation:none}}
+.table-live-main .action-row{margin:0}
+.table-live-main .poker-actions{padding:10px 12px;gap:10px;margin-top:0}
+.live-menu{position:fixed;top:8px;right:10px;z-index:20}
+.live-menu>button{min-width:44px;min-height:44px;font-size:1.3rem;line-height:1;padding:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px}
+.live-menu ul{position:absolute;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;min-width:160px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px #0004}
+.live-menu li>*{display:flex;align-items:center;width:100%;min-height:44px;padding:0 12px;background:transparent;border:0;color:var(--ink);text-decoration:none;text-align:left;border-radius:8px;cursor:pointer}
+.live-menu li>*:hover,.live-menu li>*:focus-visible{background:var(--surface-2)}
