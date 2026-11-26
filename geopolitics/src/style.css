@@ -321,3 +321,17 @@
 .chat-panel.floating .chat-badge{position:absolute;top:-6px;right:-6px;padding:0 6px;font-size:.7rem;line-height:1.4}
 .chat-panel.floating .chat-body{position:fixed;top:60px;right:10px;width:min(420px,calc(100vw - 20px));max-height:calc(100dvh - 72px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px #0004;z-index:20}
 .chat-panel.floating .chat-list{max-height:min(40dvh,320px)}
+/* kolory rzędów: Dyplomacja, Gospodarka, Bezpieczeństwo (rząd planszy + ramka kart) */
+:root{--row-diplomacy:#5b9bd5;--row-economy:#d9a441;--row-defense:#d9645a}
+.battle-row.row-diplomacy,.geo-row.row-diplomacy{--row-c:var(--row-diplomacy)}
+.battle-row.row-economy,.geo-row.row-economy{--row-c:var(--row-economy)}
+.battle-row.row-defense,.geo-row.row-defense{--row-c:var(--row-defense)}
+.battle-row[class*="row-"],.geo-row[class*="row-"]{background:color-mix(in srgb,var(--row-c) 16%,var(--felt-tint));border:1px solid color-mix(in srgb,var(--row-c) 55%,transparent)}
+.battle-row[class*="row-"] .row-title{border-right-color:color-mix(in srgb,var(--row-c) 55%,transparent)}
+.geo-row[class*="row-"] .geo-row-name{color:var(--row-c);opacity:.4}
+.geo-row.marked{border:2px solid var(--felt-gold)}
+.geo-card.row-diplomacy,.geo-tile.row-diplomacy{border:2px solid var(--row-diplomacy)}
+.geo-card.row-economy,.geo-tile.row-economy{border:2px solid var(--row-economy)}
+.geo-card.row-defense,.geo-tile.row-defense{border:2px solid var(--row-defense)}
+.geo-card-caption.info{cursor:help;position:relative}
+.geo-info{flex-shrink:0;margin-left:auto;width:16px;height:16px;border:1px solid currentColor;border-radius:50%;font:italic 700 .65rem/14px Georgia,serif;text-align:center;opacity:.6}

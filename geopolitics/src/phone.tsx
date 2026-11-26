@@ -31,6 +31,6 @@ export function Layer({title,onClose,center=false,level=1,children}:any) {
 /** A card on the board: only its picture; details come in a layer after a tap. */
 export function GeoTile({card,power,onClick}:any) {
  const url=cardArtUrl(card),[failed,setFailed]=useState<string|null>(null),hasArt=!!url&&failed!==url;
- return <button className={`geo-tile ${card.faction} ${card.hero?'hero-card':''}`} onClick={onClick} aria-label={tr("{0}, siła {1}", [tr(card.name), power])}>
+ return <button className={`geo-tile ${card.faction} ${card.hero?'hero-card':''} ${typeof card.row==='string'?'row-'+card.row:''}`} onClick={onClick} aria-label={tr("{0}, siła {1}", [tr(card.name), power])}>
   {hasArt?<img src={url} alt="" loading="lazy" decoding="async" onError={()=>setFailed(url)}/>:<b className="geo-tile-fallback">{power}</b>}</button>;
 }
